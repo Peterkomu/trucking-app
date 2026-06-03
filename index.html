@@ -28,20 +28,6 @@
         .flex-row { display: flex; gap: 10px; }
         .flex-item { flex: 1; }
         .small-label { display: block; font-size: 12px; color: #666; margin-top: 4px; text-align: center;}
-        
-        /* Live Summary Banner */
-        .summary-banner {
-            background-color: #e6f7f7;
-            color: #007a87;
-            padding: 12px;
-            text-align: center;
-            border-radius: 6px;
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 15px;
-            border: 1px solid #bce5e7;
-        }
         .extra-actions { margin-top: 5px; }
     </style>
 </head>
@@ -160,16 +146,9 @@
                 <input type="text" id="remarks" placeholder="Any notes...">
             </div>
 
-            <!-- Primary Submission Button -->
             <button type="submit" class="btn-submit" id="submitBtn">Submit Log</button>
         </form>
 
-        <!-- Live Metrics Summary Box -->
-        <div class="summary-banner" id="summaryBanner">
-            Total KM: 0 km | Total Time: 0h 0m
-        </div>
-
-        <!-- Optional Core Sharing Utilities -->
         <div class="extra-actions">
             <button type="button" class="btn-whatsapp" id="whatsappBtn">Send via WhatsApp</button>
             <button type="button" class="btn-pdf" id="pdfBtn">Download PDF</button>
@@ -183,12 +162,6 @@
         // Cache variable to safely preserve the last dataset for sharing after form resets
         let lastSubmittedPayload = null;
 
-        function updateSummaryBanner() {
-            const km = document.getElementById('totalKm').value || "0";
-            const time = document.getElementById('totalHours').value || "0h 0m";
-            document.getElementById('summaryBanner').innerText = "Total KM: " + km + " km | Total Time: " + time;
-        }
-
         function calculateKm() {
             const start = parseFloat(document.getElementById('startKm').value) || 0;
             const end = parseFloat(document.getElementById('endKm').value) || 0;
@@ -197,7 +170,6 @@
             } else {
                 document.getElementById('totalKm').value = "";
             }
-            updateSummaryBanner();
         }
         document.getElementById('startKm').addEventListener('input', calculateKm);
         document.getElementById('endKm').addEventListener('input', calculateKm);
@@ -227,7 +199,6 @@
                     }
                 }
             }
-            updateSummaryBanner();
         }
         
         document.getElementById('beginTime').addEventListener('input', calculateHours);
@@ -431,7 +402,6 @@
                     document.getElementById('totalKm').value = "";
                     document.getElementById('breakHours').value = "0";
                     document.getElementById('breakMins').value = "0";
-                    updateSummaryBanner();
                 }
                 submitBtn.innerText = "Submit Log";
                 submitBtn.style.backgroundColor = "#28a745";
