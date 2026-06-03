@@ -12,12 +12,37 @@
         label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px;}
         input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;}
         input[readonly] { background-color: #e9ecef; cursor: not-allowed; color: #666; font-weight: bold;}
-        button { width: 100%; padding: 14px; background-color: #28a745; color: white; border: none; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px;}
-        button:hover { background-color: #218838; }
+        
+        /* Action Buttons Styling */
+        button { width: 100%; padding: 14px; border: none; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 12px; display: block;}
+        .btn-submit { background-color: #28a745; color: white; }
+        .btn-submit:hover { background-color: #218838; }
+        .btn-whatsapp { background-color: #25D366; color: white; }
+        .btn-whatsapp:hover { background-color: #1ebd56; }
+        .btn-pdf { background-color: #d9534f; color: white; }
+        .btn-pdf:hover { background-color: #c9302c; }
+        .btn-excel { background-color: #4caf50; color: white; }
+        .btn-excel:hover { background-color: #388e3c; }
+        
         h2 { text-align: center; color: #2c3e50; margin-top: 0;}
         .flex-row { display: flex; gap: 10px; }
         .flex-item { flex: 1; }
         .small-label { display: block; font-size: 12px; color: #666; margin-top: 4px; text-align: center;}
+        
+        /* Live Summary Banner */
+        .summary-banner {
+            background-color: #e6f7f7;
+            color: #007a87;
+            padding: 12px;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            border: 1px solid #bce5e7;
+        }
+        .extra-actions { margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -135,12 +160,34 @@
                 <input type="text" id="remarks" placeholder="Any notes...">
             </div>
 
-            <button type="submit">Submit Log</button>
+            <!-- Primary Submission Button -->
+            <button type="submit" class="btn-submit" id="submitBtn">Submit Log</button>
         </form>
+
+        <!-- Live Metrics Summary Box -->
+        <div class="summary-banner" id="summaryBanner">
+            Total KM: 0 km | Total Time: 0h 0m
+        </div>
+
+        <!-- Optional Core Sharing Utilities -->
+        <div class="extra-actions">
+            <button type="button" class="btn-whatsapp" id="whatsappBtn">Send via WhatsApp</button>
+            <button type="button" class="btn-pdf" id="pdfBtn">Download PDF</button>
+            <button type="button" class="btn-excel" id="excelBtn">Download Excel</button>
+        </div>
     </div>
 
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyg31dt5IlZRN90ns_6VF4xFe-EYetWTYKRyPAeTiryrGn6y5cfzO1aZYv1WSx9WM2tvA/exec'; 
+
+        // Cache variable to safely preserve the last dataset for sharing after form resets
+        let lastSubmittedPayload = null;
+
+        function updateSummaryBanner() {
+            const km = document.getElementById('totalKm').value || "0";
+            const time = document.getElementById('totalHours').value || "0h 0m";
+            document.getElementById('summaryBanner').innerText = "Total KM: " + km + " km | Total Time: " + time;
+        }
 
         function calculateKm() {
             const start = parseFloat(document.getElementById('startKm').value) || 0;
@@ -150,6 +197,7 @@
             } else {
                 document.getElementById('totalKm').value = "";
             }
+            updateSummaryBanner();
         }
         document.getElementById('startKm').addEventListener('input', calculateKm);
         document.getElementById('endKm').addEventListener('input', calculateKm);
@@ -179,6 +227,7 @@
                     }
                 }
             }
+            updateSummaryBanner();
         }
         
         document.getElementById('beginTime').addEventListener('input', calculateHours);
@@ -197,14 +246,10 @@
             document.getElementById('weekNumber').value = weekNo;
         });
 
-        document.getElementById('truckingForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
+        function generateCurrentPayload() {
             const bH = parseInt(document.getElementById('breakHours').value) || 0;
             const bM = parseInt(document.getElementById('breakMins').value) || 0;
-            const formattedBreakTime = bH + "h " + bM + "m";
-
-            const payload = {
+            return {
                 weekNumber: document.getElementById('weekNumber').value,
                 datum: document.getElementById('date').value,
                 driver: document.getElementById('driver').value,
@@ -213,15 +258,161 @@
                 trailerLicense: document.getElementById('trailerLicense').value,
                 beginTime: document.getElementById('beginTime').value,
                 eindTime: document.getElementById('eindTime').value,
-                breakTime: formattedBreakTime,
+                breakTime: bH + "h " + bM + "m",
                 totalHours: document.getElementById('totalHours').value,
                 startKm: document.getElementById('startKm').value,
                 endKm: document.getElementById('endKm').value,
                 totalKm: document.getElementById('totalKm').value,
                 remarks: document.getElementById('remarks').value
             };
+        }
 
-            const submitBtn = document.querySelector('button[type="submit"]');
+        // --- EXPORT FUNCTIONALITIES ---
+        function generatePDF(payload) {
+            if (!payload || !payload.driver) {
+                alert("Please fill out and submit the log data first.");
+                return;
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(18);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(44, 62, 80);
+            doc.text("Driver Work Report", 15, 20);
+            
+            const startX = 15;
+            let currentY = 28;
+            const tableWidth = 180;
+            const col1Width = 55;
+            const rowHeight = 9;
+            
+            doc.setFillColor(51, 122, 183); 
+            doc.rect(startX, currentY, tableWidth, rowHeight, "F");
+            
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(255, 255, 255);
+            doc.text("Field", startX + 4, currentY + 6);
+            doc.text("Value", startX + col1Width + 4, currentY + 6);
+            
+            currentY += rowHeight;
+            
+            const reportRows = [
+                ["Client", payload.client],
+                ["Truck", payload.truckLicense || "-"],
+                ["Trailer", payload.trailerLicense || "-"],
+                ["Start Time", payload.beginTime.replace('T', ' ')],
+                ["End Time", payload.eindTime.replace('T', ' ')],
+                ["Break Time", payload.breakTime],
+                ["Start KM", payload.startKm],
+                ["End KM", payload.endKm],
+                ["Total KM", payload.totalKm],
+                ["Total Hours", payload.totalHours],
+                ["Remarks", payload.remarks || "-"]
+            ];
+            
+            reportRows.forEach((row, index) => {
+                if (index % 2 === 0) {
+                    doc.setFillColor(245, 247, 250);
+                } else {
+                    doc.setFillColor(255, 255, 255);
+                }
+                doc.rect(startX, currentY, tableWidth, rowHeight, "F");
+                
+                doc.setDrawColor(220, 224, 230);
+                doc.rect(startX, currentY, tableWidth, rowHeight, "D");
+                
+                doc.setTextColor(60, 60, 60);
+                doc.setFont("helvetica", "normal");
+                doc.text(row[0], startX + 4, currentY + 6);
+                doc.text(String(row[1]), startX + col1Width + 4, currentY + 6);
+                
+                currentY += rowHeight;
+            });
+            
+            doc.save("Shift_Log_" + payload.datum + ".pdf");
+        }
+
+        function generateExcel(payload) {
+            if (!payload || !payload.driver) {
+                alert("Please fill out and submit the log data first.");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,Field,Value\n";
+            csvContent += "Week Number," + payload.weekNumber + "\n";
+            csvContent += "Date," + payload.datum + "\n";
+            csvContent += "Driver," + payload.driver + "\n";
+            csvContent += "Client," + payload.client + "\n";
+            csvContent += "Truck License," + (payload.truckLicense || "-") + "\n";
+            csvContent += "Trailer License," + (payload.trailerLicense || "-") + "\n";
+            csvContent += "Start Time," + payload.beginTime.replace('T', ' ') + "\n";
+            csvContent += "End Time," + payload.eindTime.replace('T', ' ') + "\n";
+            csvContent += "Break Time," + payload.breakTime + "\n";
+            csvContent += "Total Hours," + payload.totalHours + "\n";
+            csvContent += "Start KM," + payload.startKm + "\n";
+            csvContent += "End KM," + payload.endKm + "\n";
+            csvContent += "Total KM," + payload.totalKm + "\n";
+            csvContent += "Remarks," + (payload.remarks || "-") + "\n";
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Shift_Log_" + payload.datum + ".csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function sendWhatsApp(payload) {
+            if (!payload || !payload.driver) {
+                alert("Please fill out and submit the log data first.");
+                return;
+            }
+            let msg = "DRIVER SHIFT REPORT\n";
+            msg += "------------------------\n";
+            msg += "Date: " + payload.datum + "\n";
+            msg += "Driver: " + payload.driver + "\n";
+            msg += "Client: " + payload.client + "\n";
+            msg += "Truck: " + (payload.truckLicense || "-") + "\n";
+            msg += "Trailer: " + (payload.trailerLicense || "-") + "\n";
+            msg += "Start Time: " + payload.beginTime.replace('T', ' ') + "\n";
+            msg += "End Time: " + payload.eindTime.replace('T', ' ') + "\n";
+            msg += "Break Time: " + payload.breakTime + "\n";
+            msg += "Total Hours: " + payload.totalHours + "\n";
+            msg += "Start KM: " + payload.startKm + "\n";
+            msg += "End KM: " + payload.endKm + "\n";
+            msg += "Total KM: " + payload.totalKm + "\n";
+            msg += "Remarks: " + (payload.remarks || "-");
+
+            const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
+            window.open(url, '_blank');
+        }
+
+        // --- BUTTON EVENT LISTENERS ---
+        document.getElementById('whatsappBtn').addEventListener('click', () => {
+            const activePayload = lastSubmittedPayload || generateCurrentPayload();
+            sendWhatsApp(activePayload);
+        });
+
+        document.getElementById('pdfBtn').addEventListener('click', () => {
+            const activePayload = lastSubmittedPayload || generateCurrentPayload();
+            generatePDF(activePayload);
+        });
+
+        document.getElementById('excelBtn').addEventListener('click', () => {
+            const activePayload = lastSubmittedPayload || generateCurrentPayload();
+            generateExcel(activePayload);
+        });
+
+        // --- MAIN FORM SUBMISSION PIPELINE ---
+        document.getElementById('truckingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const payload = generateCurrentPayload();
+            lastSubmittedPayload = payload; // Lock current data into memory block
+
+            const submitBtn = document.getElementById('submitBtn');
             submitBtn.innerText = "Submitting...";
             submitBtn.style.backgroundColor = "#6c757d";
 
@@ -232,79 +423,15 @@
             .then(response => response.json())
             .then(data => {
                 if(data.status === 'success') {
-                    alert('Shift logged successfully! Your PDF receipt is downloading.');
+                    alert('Shift logged successfully! You can now use the optional sharing choices below.');
                     
-                    // --- TABULAR PDF GENERATION ---
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    
-                    // Title Styling
-                    doc.setFontSize(18);
-                    doc.setFont("helvetica", "bold");
-                    doc.setTextColor(44, 62, 80);
-                    doc.text("Driver Work Report", 15, 20);
-                    
-                    const startX = 15;
-                    let currentY = 28;
-                    const tableWidth = 180;
-                    const col1Width = 55;
-                    const rowHeight = 9;
-                    
-                    // Main Header Row Structure
-                    doc.setFillColor(51, 122, 183); 
-                    doc.rect(startX, currentY, tableWidth, rowHeight, "F");
-                    
-                    doc.setFontSize(11);
-                    doc.setFont("helvetica", "bold");
-                    doc.setTextColor(255, 255, 255);
-                    doc.text("Field", startX + 4, currentY + 6);
-                    doc.text("Value", startX + col1Width + 4, currentY + 6);
-                    
-                    currentY += rowHeight;
-                    
-                    const reportRows = [
-                        ["Client", payload.client],
-                        ["Truck", payload.truckLicense || "-"],
-                        ["Trailer", payload.trailerLicense || "-"],
-                        ["Start Time", payload.beginTime.replace('T', ' ')],
-                        ["End Time", payload.eindTime.replace('T', ' ')],
-                        ["Break Time", payload.breakTime],
-                        ["Start KM", payload.startKm],
-                        ["End KM", payload.endKm],
-                        ["Total KM", payload.totalKm],
-                        ["Total Hours", payload.totalHours],
-                        ["Remarks", payload.remarks || "-"]
-                    ];
-                    
-                    // Render Grid Rows
-                    reportRows.forEach((row, index) => {
-                        if (index % 2 === 0) {
-                            doc.setFillColor(245, 247, 250);
-                        } else {
-                            doc.setFillColor(255, 255, 255);
-                        }
-                        doc.rect(startX, currentY, tableWidth, rowHeight, "F");
-                        
-                        doc.setDrawColor(220, 224, 230);
-                        doc.rect(startX, currentY, tableWidth, rowHeight, "D");
-                        
-                        doc.setTextColor(60, 60, 60);
-                        doc.setFont("helvetica", "normal");
-                        doc.text(row[0], startX + 4, currentY + 6);
-                        doc.text(String(row[1]), startX + col1Width + 4, currentY + 6);
-                        
-                        currentY += rowHeight;
-                    });
-                    
-                    // Download PDF
-                    doc.save("Shift_Log_" + payload.datum + ".pdf");
-                    
-                    // Reset Form
+                    // Clear out inputs safely on screen
                     document.getElementById('truckingForm').reset();
                     document.getElementById('totalHours').value = "";
                     document.getElementById('totalKm').value = "";
                     document.getElementById('breakHours').value = "0";
                     document.getElementById('breakMins').value = "0";
+                    updateSummaryBanner();
                 }
                 submitBtn.innerText = "Submit Log";
                 submitBtn.style.backgroundColor = "#28a745";
