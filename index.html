@@ -23,8 +23,8 @@
         <form id="truckingForm">
             
             <div class="form-group">
-                <label>Date *</label>
-                <input type="date" id="date" required>
+                <label>Datum *</label>
+                <input type="date" id="datum" required>
             </div>
 
             <div class="form-group">
@@ -127,10 +127,8 @@
     </div>
 
     <script>
-        // CRITICAL: PASTE YOUR GOOGLE SCRIPT URL BETWEEN THE QUOTES BELOW!
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyg31dt5IlZRN90ns_6VF4xFe-EYetWTYKRyPAeTiryrGn6y5cfzO1aZYv1WSx9WM2tvA/exec'; 
 
-        // Auto-calculate Total KM
         function calculateKm() {
             const start = parseFloat(document.getElementById('startKm').value) || 0;
             const end = parseFloat(document.getElementById('endKm').value) || 0;
@@ -143,7 +141,6 @@
         document.getElementById('startKm').addEventListener('input', calculateKm);
         document.getElementById('endKm').addEventListener('input', calculateKm);
 
-        // Auto-calculate Total Hours
         function calculateHours() {
             const begin = document.getElementById('beginTime').value;
             const end = document.getElementById('eindTime').value;
@@ -174,7 +171,6 @@
         document.getElementById('eindTime').addEventListener('input', calculateHours);
         document.getElementById('breakTime').addEventListener('input', calculateHours);
 
-        // Auto-calculate Week Number from Datum
         document.getElementById('datum').addEventListener('change', function(e) {
             if(!e.target.value) return;
             const date = new Date(e.target.value);
@@ -186,7 +182,6 @@
             document.getElementById('weekNumber').value = weekNo;
         });
 
-        // Submit Data to Google Sheets
         document.getElementById('truckingForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -225,7 +220,7 @@
                 submitBtn.style.backgroundColor = "#28a745";
             })
             .catch(error => {
-                alert('Error logging shift. Make sure you pasted the URL.');
+                alert('Error logging shift. Check your internet connection.');
                 submitBtn.innerText = "Submit Log";
                 submitBtn.style.backgroundColor = "#28a745";
             });
