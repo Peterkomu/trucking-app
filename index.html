@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Work Entry</title>
+    <!-- We added the jsPDF library here so the browser knows how to draw PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; background-color: #f4f7f6; }
         .form-container { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
@@ -231,37 +233,46 @@
             .then(response => response.json())
             .then(data => {
                 if(data.status === 'success') {
-                    alert('Shift logged successfully! Downloading your receipt.');
+                    alert('Shift logged successfully! Downloading your PDF receipt.');
                     
-                    // Generate and download the receipt
-                    let receiptContent = "DRIVER SHIFT RECEIPT\n";
-                    receiptContent += "------------------------\n";
-                    receiptContent += "Date: " + payload.datum + "\n";
-                    receiptContent += "Driver: " + payload.driver + "\n";
-                    receiptContent += "Client: " + payload.client + "\n";
-                    receiptContent += "Truck: " + payload.truckLicense + "\n";
-                    receiptContent += "Trailer: " + payload.trailerLicense + "\n";
-                    receiptContent += "Start Time: " + payload.beginTime.replace('T', ' ') + "\n";
-                    receiptContent += "End Time: " + payload.eindTime.replace('T', ' ') + "\n";
-                    receiptContent += "Break Time: " + payload.breakTime + "\n";
-                    receiptContent += "Total Hours: " + payload.totalHours + "\n";
-                    receiptContent += "Start KM: " + payload.startKm + "\n";
-                    receiptContent += "End KM: " + payload.endKm + "\n";
-                    receiptContent += "Total KM: " + payload.totalKm + "\n";
-                    receiptContent += "Remarks: " + payload.remarks + "\n";
-                    receiptContent += "------------------------\n";
-                    receiptContent += "Submitted to Server successfully.";
-
-                    const blob = new Blob([receiptContent], { type: 'text/plain' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
+                    // --- PDF GENERATION LOGIC ---
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
                     
-                    // Name the file dynamically based on the date and driver
-                    link.download = "Shift_Log_" + payload.datum + ".txt";
+                    // Add Title
+                    doc.setFontSize(18);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("DRIVER SHIFT RECEIPT", 20, 20);
                     
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    // Add Body Text
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "normal");
+                    
+                    let y = 40; // Starting height
+                    const spacing = 10; // Space between lines
+                    
+                    doc.text("Date: " + payload.datum, 20, y); y += spacing;
+                    doc.text("Driver: " + payload.driver, 20, y); y += spacing;
+                    doc.text("Client: " + payload.client, 20, y); y += spacing;
+                    doc.text("Truck: " + payload.truckLicense, 20, y); y += spacing;
+                    doc.text("Trailer: " + payload.trailerLicense, 20, y); y += spacing;
+                    doc.text("Start Time: " + payload.beginTime.replace('T', ' '), 20, y); y += spacing;
+                    doc.text("End Time: " + payload.eindTime.replace('T', ' '), 20, y); y += spacing;
+                    doc.text("Break Time: " + payload.breakTime, 20, y); y += spacing;
+                    doc.text("Total Hours: " + payload.totalHours, 20, y); y += spacing;
+                    doc.text("Start KM: " + payload.startKm, 20, y); y += spacing;
+                    doc.text("End KM: " + payload.endKm, 20, y); y += spacing;
+                    doc.text("Total KM: " + payload.totalKm, 20, y); y += spacing;
+                    doc.text("Remarks: " + payload.remarks, 20, y); y += spacing;
+                    
+                    // Add Footer
+                    doc.setFont("helvetica", "italic");
+                    doc.setTextColor(100, 100, 100);
+                    doc.text("Data successfully verified and saved to database.", 20, y + 10);
+                    
+                    // Trigger Download
+                    doc.save("Shift_Log_" + payload.datum + ".pdf");
+                    // -----------------------------
 
                     // Reset the form
                     document.getElementById('truckingForm').reset();
