@@ -5,60 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Work Entry</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; background-color: #f4f7f6; }
+        .form-container { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; font-size: 16px; cursor: pointer; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px;}
+        input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;}
+        input[readonly] { background-color: #e9ecef; cursor: not-allowed; color: #666; font-weight: bold;}
+        button { width: 100%; padding: 14px; background-color: #28a745; color: white; border: none; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px;}
+        button:hover { background-color: #218838; }
+        h2 { text-align: center; color: #2c3e50; margin-top: 0;}
     </style>
 </head>
 <body>
 
-    <h2>Driver Work Entry</h2>
-    
-    <form id="truckingForm">
-        <div class="form-group">
-            <label>Datum</label>
-            <input type="date" id="datum" required>
-        </div>
-        
-        <div class="form-group">
-            <label>Driver</label>
-            <select id="driver" required>
-                <option value="">Select Driver</option>
-                <option value="Adrian">Adrian</option>
-                <option value="Cosmin">Cosmin</option>
-                <option value="Andressa">Andressa</option>
-            </select>
-        </div>
+    <div class="form-container">
+        <h2>Driver Work Entry</h2>
+        <form id="truckingForm">
+            
+            <div class="form-group">
+                <label>Datum *</label>
+                <input type="date" id="datum" required>
+            </div>
 
-        <div class="form-group">
-            <label>Start KM</label>
-            <input type="number" id="startKm" required>
-        </div>
+            <div class="form-group">
+                <label>Week Number</label>
+                <input type="number" id="weekNumber" required readonly>
+            </div>
 
-        <div class="form-group">
-            <label>End KM</label>
-            <input type="number" id="endKm" required>
-        </div>
+            <div class="form-group">
+                <label>Driver *</label>
+                <select id="driver" required>
+                    <option value="">Select Driver</option>
+                    <option value="Adrian">Adrian</option>
+                    <option value="Andressa">Andressa</option>
+                    <option value="Cosmin">Cosmin</option>
+                    <option value="Virgil Vaduva">Virgil Vaduva</option>
+                    <option value="Tiago Cruz">Tiago Cruz</option>
+                    <option value="Slawomir">Slawomir</option>
+                    <option value="Aleh Zhabatsinski">Aleh Zhabatsinski</option>
+                    <option value="Andrei Birau Ioan">Andrei Birau Ioan</option>
+                </select>
+            </div>
 
-        <button type="submit">Submit Log</button>
-    </form>
+            <div class="form-group">
+                <label>Client *</label>
+                <select id="client" required>
+                    <option value="">Select Client</option>
+                    <option value="Flow">Flow</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Truck License</label>
+                <input type="text" id="truckLicense" placeholder="e.g. 75-BLT-6">
+            </div>
+
+            <div class="form-group">
+                <label>Trailer License</label>
+                <input type="text" id="trailerLicense" placeholder="e.g. ON-29-FH">
+            </div>
+
+            <div class="form-group">
+                <label>Begin Time *</label>
+                <input type="datetime-local" id="beginTime" required>
+            </div>
+
+            <div class="form-group">
+                <label>Eind Time *</label>
+                <input type="datetime-local" id="eindTime" required>
+            </div>
+
+            <div class="form-group">
+                <label>Break Time (HH:MM)</label>
+                <input type="time" id="breakTime" value="00:00">
+            </div>
+
+            <div class="form-group">
+                <label>Total Hours</label>
+                <input type="text" id="totalHours" readonly placeholder="0h 0m">
+            </div>
+
+            <div class="form-group">
+                <label>Start KM *</label>
+                <input type="number" id="startKm" required>
+            </div>
+
+            <div class="form-group">
+                <label>End KM *</label>
+                <input type="number" id="endKm" required>
+            </div>
+
+            <div class="form-group">
+                <label>Total KM</label>
+                <input type="number" id="totalKm" readonly placeholder="0">
+            </div>
+
+            <div class="form-group">
+                <label>Remarks</label>
+                <input type="text" id="remarks" placeholder="Any notes...">
+            </div>
+
+            <button type="submit">Submit Log</button>
+        </form>
+    </div>
 
     <script>
-        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-        const GOOGLE_SCRIPT_URL = 'YOUR_WEB_APP_URL_HERE';
+        // CRITICAL: PASTE YOUR GOOGLE SCRIPT URL BETWEEN THE QUOTES BELOW!
+        const GOOGLE_SCRIPT_URL = 'YOUR_WEB_APP_URL_HERE'; 
 
+        // Auto-calculate Total KM
+        function calculateKm() {
+            const start = parseFloat(document.getElementById('startKm').value) || 0;
+            const end = parseFloat(document.getElementById('endKm').value) || 0;
+            if(end > start) {
+                document.getElementById('totalKm').value = end - start;
+            } else {
+                document.getElementById('totalKm').value = "";
+            }
+        }
+        document.getElementById('startKm').addEventListener('input', calculateKm);
+        document.getElementById('endKm').addEventListener('input', calculateKm);
+
+        // Auto-calculate Total Hours
+        function calculateHours() {
+            const begin = document.getElementById('beginTime').value;
+            const end = document.getElementById('eindTime').value;
+            const breakTime = document.getElementById('breakTime').value || "00:00";
+
+            if(begin && end) {
+                const beginDate = new Date(begin);
+                const endDate = new Date(end);
+                let diffMs = endDate - beginDate;
+
+                if (diffMs > 0) {
+                    const [breakHours, breakMins] = breakTime.split(':').map(Number);
+                    const breakMs = ((breakHours * 60) + breakMins) * 60000;
+                    diffMs -= breakMs;
+
+                    if (diffMs > 0) {
+                        const totalMins = Math.floor(diffMs / 60000);
+                        const h = Math.floor(totalMins / 60);
+                        const m = totalMins % 60;
+                        document.getElementById('totalHours').value = h + "h " + m + "m";
+                    } else {
+                        document.getElementById('totalHours').value = "0h 0m";
+                    }
+                }
+            }
+        }
+        document.getElementById('beginTime').addEventListener('input', calculateHours);
+        document.getElementById('eindTime').addEventListener('input', calculateHours);
+        document.getElementById('breakTime').addEventListener('input', calculateHours);
+
+        // Auto-calculate Week Number from Datum
+        document.getElementById('datum').addEventListener('change', function(e) {
+            if(!e.target.value) return;
+            const date = new Date(e.target.value);
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+            document.getElementById('weekNumber').value = weekNo;
+        });
+
+        // Submit Data to Google Sheets
         document.getElementById('truckingForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const payload = {
+                weekNumber: document.getElementById('weekNumber').value,
                 datum: document.getElementById('datum').value,
                 driver: document.getElementById('driver').value,
+                client: document.getElementById('client').value,
+                truckLicense: document.getElementById('truckLicense').value,
+                trailerLicense: document.getElementById('trailerLicense').value,
+                beginTime: document.getElementById('beginTime').value,
+                eindTime: document.getElementById('eindTime').value,
+                breakTime: document.getElementById('breakTime').value,
                 startKm: document.getElementById('startKm').value,
-                endKm: document.getElementById('endKm').value
-                // Add the rest of your fields here to match the form
+                endKm: document.getElementById('endKm').value,
+                remarks: document.getElementById('remarks').value
             };
+
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerText = "Submitting...";
+            submitBtn.style.backgroundColor = "#6c757d";
 
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
@@ -69,9 +201,17 @@
                 if(data.status === 'success') {
                     alert('Shift logged successfully!');
                     document.getElementById('truckingForm').reset();
+                    document.getElementById('totalHours').value = "";
+                    document.getElementById('totalKm').value = "";
                 }
+                submitBtn.innerText = "Submit Log";
+                submitBtn.style.backgroundColor = "#28a745";
             })
-            .catch(error => alert('Error logging shift.'));
+            .catch(error => {
+                alert('Error logging shift. Make sure you pasted the URL.');
+                submitBtn.innerText = "Submit Log";
+                submitBtn.style.backgroundColor = "#28a745";
+            });
         });
     </script>
 </body>
