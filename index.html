@@ -26,8 +26,8 @@
         <form id="truckingForm">
             
             <div class="form-group">
-                <label>Datum *</label>
-                <input type="date" id="datum" required>
+                <label>Date *</label>
+                <input type="date" id="date" required>
             </div>
 
             <div class="form-group">
@@ -139,7 +139,6 @@
     </div>
 
     <script>
-        // YOUR LINK IS ALREADY HERE
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyg31dt5IlZRN90ns_6VF4xFe-EYetWTYKRyPAeTiryrGn6y5cfzO1aZYv1WSx9WM2tvA/exec'; 
 
         function calculateKm() {
@@ -181,13 +180,12 @@
             }
         }
         
-        // Listen to the new break fields to update the live math
         document.getElementById('beginTime').addEventListener('input', calculateHours);
         document.getElementById('eindTime').addEventListener('input', calculateHours);
         document.getElementById('breakHours').addEventListener('input', calculateHours);
         document.getElementById('breakMins').addEventListener('input', calculateHours);
 
-        document.getElementById('datum').addEventListener('change', function(e) {
+        document.getElementById('date').addEventListener('change', function(e) {
             if(!e.target.value) return;
             const date = new Date(e.target.value);
             const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -201,14 +199,13 @@
         document.getElementById('truckingForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Re-combine the two boxes into the HH:MM format your sheet expects
             const bH = parseInt(document.getElementById('breakHours').value) || 0;
             const bM = parseInt(document.getElementById('breakMins').value) || 0;
             const formattedBreakTime = String(bH).padStart(2, '0') + ':' + String(bM).padStart(2, '0');
 
             const payload = {
                 weekNumber: document.getElementById('weekNumber').value,
-                datum: document.getElementById('datum').value,
+                datum: document.getElementById('date').value,
                 driver: document.getElementById('driver').value,
                 client: document.getElementById('client').value,
                 truckLicense: document.getElementById('truckLicense').value,
@@ -236,7 +233,6 @@
                 if(data.status === 'success') {
                     alert('Shift logged successfully!');
                     document.getElementById('truckingForm').reset();
-                    // Reset the custom fields
                     document.getElementById('totalHours').value = "";
                     document.getElementById('totalKm').value = "";
                     document.getElementById('breakHours').value = "0";
