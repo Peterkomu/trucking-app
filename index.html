@@ -14,6 +14,9 @@
         button { width: 100%; padding: 14px; background-color: #28a745; color: white; border: none; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px;}
         button:hover { background-color: #218838; }
         h2 { text-align: center; color: #2c3e50; margin-top: 0;}
+        .flex-row { display: flex; gap: 10px; }
+        .flex-item { flex: 1; }
+        .small-label { display: block; font-size: 12px; color: #666; margin-top: 4px; text-align: center;}
     </style>
 </head>
 <body>
@@ -93,8 +96,17 @@
             </div>
 
             <div class="form-group">
-                <label>Break Time (HH:MM)</label>
-                <input type="time" id="breakTime" value="00:00">
+                <label>Break Time</label>
+                <div class="flex-row">
+                    <div class="flex-item">
+                        <input type="number" id="breakHours" min="0" max="24" value="0">
+                        <span class="small-label">Hours</span>
+                    </div>
+                    <div class="flex-item">
+                        <input type="number" id="breakMins" min="0" max="59" value="0">
+                        <span class="small-label">Minutes</span>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -127,7 +139,7 @@
     </div>
 
     <script>
-        // PASTE YOUR LINK HERE!
+        // YOUR LINK IS ALREADY HERE
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyg31dt5IlZRN90ns_6VF4xFe-EYetWTYKRyPAeTiryrGn6y5cfzO1aZYv1WSx9WM2tvA/exec'; 
 
         function calculateKm() {
@@ -145,7 +157,8 @@
         function calculateHours() {
             const begin = document.getElementById('beginTime').value;
             const end = document.getElementById('eindTime').value;
-            const breakTime = document.getElementById('breakTime').value || "00:00";
+            const bHours = parseInt(document.getElementById('breakHours').value) || 0;
+            const bMins = parseInt(document.getElementById('breakMins').value) || 0;
 
             if(begin && end) {
                 const beginDate = new Date(begin);
@@ -153,8 +166,7 @@
                 let diffMs = endDate - beginDate;
 
                 if (diffMs > 0) {
-                    const [breakHours, breakMins] = breakTime.split(':').map(Number);
-                    const breakMs = ((breakHours * 60) + breakMins) * 60000;
+                    const breakMs = ((bHours * 60) + bMins) * 60000;
                     diffMs -= breakMs;
 
                     if (diffMs > 0) {
@@ -168,9 +180,12 @@
                 }
             }
         }
+        
+        // Listen to the new break fields to update the live math
         document.getElementById('beginTime').addEventListener('input', calculateHours);
         document.getElementById('eindTime').addEventListener('input', calculateHours);
-        document.getElementById('breakTime').addEventListener('input', calculateHours);
+        document.getElementById('breakHours').addEventListener('input', calculateHours);
+        document.getElementById('breakMins').addEventListener('input', calculateHours);
 
         document.getElementById('datum').addEventListener('change', function(e) {
             if(!e.target.value) return;
@@ -186,6 +201,11 @@
         document.getElementById('truckingForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Re-combine the two boxes into the HH:MM format your sheet expects
+            const bH = parseInt(document.getElementById('breakHours').value) || 0;
+            const bM = parseInt(document.getElementById('breakMins').value) || 0;
+            const formattedBreakTime = String(bH).padStart(2, '0') + ':' + String(bM).padStart(2, '0');
+
             const payload = {
                 weekNumber: document.getElementById('weekNumber').value,
                 datum: document.getElementById('datum').value,
@@ -195,7 +215,7 @@
                 trailerLicense: document.getElementById('trailerLicense').value,
                 beginTime: document.getElementById('beginTime').value,
                 eindTime: document.getElementById('eindTime').value,
-                breakTime: document.getElementById('breakTime').value,
+                breakTime: formattedBreakTime,
                 totalHours: document.getElementById('totalHours').value,
                 startKm: document.getElementById('startKm').value,
                 endKm: document.getElementById('endKm').value,
@@ -216,8 +236,11 @@
                 if(data.status === 'success') {
                     alert('Shift logged successfully!');
                     document.getElementById('truckingForm').reset();
+                    // Reset the custom fields
                     document.getElementById('totalHours').value = "";
                     document.getElementById('totalKm').value = "";
+                    document.getElementById('breakHours').value = "0";
+                    document.getElementById('breakMins').value = "0";
                 }
                 submitBtn.innerText = "Submit Log";
                 submitBtn.style.backgroundColor = "#28a745";
