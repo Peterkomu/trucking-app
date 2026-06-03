@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Work Entry</title>
-    <!-- We added the jsPDF library here so the browser knows how to draw PDFs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; background-color: #f4f7f6; }
@@ -203,7 +202,7 @@
             
             const bH = parseInt(document.getElementById('breakHours').value) || 0;
             const bM = parseInt(document.getElementById('breakMins').value) || 0;
-            const formattedBreakTime = String(bH).padStart(2, '0') + ':' + String(bM).padStart(2, '0');
+            const formattedBreakTime = bH + "h " + bM + "m";
 
             const payload = {
                 weekNumber: document.getElementById('weekNumber').value,
@@ -233,48 +232,74 @@
             .then(response => response.json())
             .then(data => {
                 if(data.status === 'success') {
-                    alert('Shift logged successfully! Downloading your PDF receipt.');
+                    alert('Shift logged successfully! Your PDF receipt is downloading.');
                     
-                    // --- PDF GENERATION LOGIC ---
+                    // --- TABULAR PDF GENERATION ---
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
                     
-                    // Add Title
+                    // Title Styling
                     doc.setFontSize(18);
                     doc.setFont("helvetica", "bold");
-                    doc.text("DRIVER SHIFT RECEIPT", 20, 20);
+                    doc.setTextColor(44, 62, 80);
+                    doc.text("Driver Work Report", 15, 20);
                     
-                    // Add Body Text
-                    doc.setFontSize(12);
-                    doc.setFont("helvetica", "normal");
+                    const startX = 15;
+                    let currentY = 28;
+                    const tableWidth = 180;
+                    const col1Width = 55;
+                    const rowHeight = 9;
                     
-                    let y = 40; // Starting height
-                    const spacing = 10; // Space between lines
+                    // Main Header Row Structure
+                    doc.setFillColor(51, 122, 183); 
+                    doc.rect(startX, currentY, tableWidth, rowHeight, "F");
                     
-                    doc.text("Date: " + payload.datum, 20, y); y += spacing;
-                    doc.text("Driver: " + payload.driver, 20, y); y += spacing;
-                    doc.text("Client: " + payload.client, 20, y); y += spacing;
-                    doc.text("Truck: " + payload.truckLicense, 20, y); y += spacing;
-                    doc.text("Trailer: " + payload.trailerLicense, 20, y); y += spacing;
-                    doc.text("Start Time: " + payload.beginTime.replace('T', ' '), 20, y); y += spacing;
-                    doc.text("End Time: " + payload.eindTime.replace('T', ' '), 20, y); y += spacing;
-                    doc.text("Break Time: " + payload.breakTime, 20, y); y += spacing;
-                    doc.text("Total Hours: " + payload.totalHours, 20, y); y += spacing;
-                    doc.text("Start KM: " + payload.startKm, 20, y); y += spacing;
-                    doc.text("End KM: " + payload.endKm, 20, y); y += spacing;
-                    doc.text("Total KM: " + payload.totalKm, 20, y); y += spacing;
-                    doc.text("Remarks: " + payload.remarks, 20, y); y += spacing;
+                    doc.setFontSize(11);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(255, 255, 255);
+                    doc.text("Field", startX + 4, currentY + 6);
+                    doc.text("Value", startX + col1Width + 4, currentY + 6);
                     
-                    // Add Footer
-                    doc.setFont("helvetica", "italic");
-                    doc.setTextColor(100, 100, 100);
-                    doc.text("Data successfully verified and saved to database.", 20, y + 10);
+                    currentY += rowHeight;
                     
-                    // Trigger Download
+                    const reportRows = [
+                        ["Client", payload.client],
+                        ["Truck", payload.truckLicense || "-"],
+                        ["Trailer", payload.trailerLicense || "-"],
+                        ["Start Time", payload.beginTime.replace('T', ' ')],
+                        ["End Time", payload.eindTime.replace('T', ' ')],
+                        ["Break Time", payload.breakTime],
+                        ["Start KM", payload.startKm],
+                        ["End KM", payload.endKm],
+                        ["Total KM", payload.totalKm],
+                        ["Total Hours", payload.totalHours],
+                        ["Remarks", payload.remarks || "-"]
+                    ];
+                    
+                    // Render Grid Rows
+                    reportRows.forEach((row, index) => {
+                        if (index % 2 === 0) {
+                            doc.setFillColor(245, 247, 250);
+                        } else {
+                            doc.setFillColor(255, 255, 255);
+                        }
+                        doc.rect(startX, currentY, tableWidth, rowHeight, "F");
+                        
+                        doc.setDrawColor(220, 224, 230);
+                        doc.rect(startX, currentY, tableWidth, rowHeight, "D");
+                        
+                        doc.setTextColor(60, 60, 60);
+                        doc.setFont("helvetica", "normal");
+                        doc.text(row[0], startX + 4, currentY + 6);
+                        doc.text(String(row[1]), startX + col1Width + 4, currentY + 6);
+                        
+                        currentY += rowHeight;
+                    });
+                    
+                    // Download PDF
                     doc.save("Shift_Log_" + payload.datum + ".pdf");
-                    // -----------------------------
-
-                    // Reset the form
+                    
+                    // Reset Form
                     document.getElementById('truckingForm').reset();
                     document.getElementById('totalHours').value = "";
                     document.getElementById('totalKm').value = "";
