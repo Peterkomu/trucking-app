@@ -231,7 +231,39 @@
             .then(response => response.json())
             .then(data => {
                 if(data.status === 'success') {
-                    alert('Shift logged successfully!');
+                    alert('Shift logged successfully! Downloading your receipt.');
+                    
+                    // Generate and download the receipt
+                    let receiptContent = "DRIVER SHIFT RECEIPT\n";
+                    receiptContent += "------------------------\n";
+                    receiptContent += "Date: " + payload.datum + "\n";
+                    receiptContent += "Driver: " + payload.driver + "\n";
+                    receiptContent += "Client: " + payload.client + "\n";
+                    receiptContent += "Truck: " + payload.truckLicense + "\n";
+                    receiptContent += "Trailer: " + payload.trailerLicense + "\n";
+                    receiptContent += "Start Time: " + payload.beginTime.replace('T', ' ') + "\n";
+                    receiptContent += "End Time: " + payload.eindTime.replace('T', ' ') + "\n";
+                    receiptContent += "Break Time: " + payload.breakTime + "\n";
+                    receiptContent += "Total Hours: " + payload.totalHours + "\n";
+                    receiptContent += "Start KM: " + payload.startKm + "\n";
+                    receiptContent += "End KM: " + payload.endKm + "\n";
+                    receiptContent += "Total KM: " + payload.totalKm + "\n";
+                    receiptContent += "Remarks: " + payload.remarks + "\n";
+                    receiptContent += "------------------------\n";
+                    receiptContent += "Submitted to Server successfully.";
+
+                    const blob = new Blob([receiptContent], { type: 'text/plain' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    
+                    // Name the file dynamically based on the date and driver
+                    link.download = "Shift_Log_" + payload.datum + ".txt";
+                    
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    // Reset the form
                     document.getElementById('truckingForm').reset();
                     document.getElementById('totalHours').value = "";
                     document.getElementById('totalKm').value = "";
