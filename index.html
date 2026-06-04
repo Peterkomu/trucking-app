@@ -14,6 +14,11 @@
         input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;}
         input[readonly] { background-color: #e9ecef; cursor: not-allowed; color: #666; font-weight: bold;}
         
+        /* Language Selector Toolbar Layout */
+        .lang-container { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee;}
+        .btn-lang { background-color: #e0e0e0; color: #333; padding: 8px 12px; font-size: 13px; font-weight: normal; border-radius: 4px; width: auto; margin-top: 0; display: inline-block; cursor: pointer; border: 1px solid #ccc;}
+        .btn-lang.active { background-color: #337ab7; color: white; border-color: #2e6da4; font-weight: bold; }
+        
         /* Action Buttons Styling */
         button { width: 100%; padding: 14px; border: none; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 12px; display: block;}
         .btn-submit { background-color: #28a745; color: white; }
@@ -35,85 +40,97 @@
 <body>
 
     <div class="form-container">
-        <h2>Driver Work Entry</h2>
+        <div class="lang-container">
+            <div class="btn-lang active" onclick="setLanguage('en')">English</div>
+            <div class="btn-lang" onclick="setLanguage('nl')">Dutch</div>
+            <div class="btn-lang" onclick="setLanguage('pl')">Polish</div>
+            <div class="btn-lang" onclick="setLanguage('pt')">Portuguese</div>
+            <div class="btn-lang" onclick="setLanguage('ro')">Romanian</div>
+            <div class="btn-lang" onclick="setLanguage('ru')">Russian</div>
+            <div class="btn-lang" onclick="setLanguage('bg')">Bulgarian</div>
+            <div class="btn-lang" onclick="setLanguage('fr')">French</div>
+            <div class="btn-lang" onclick="setLanguage('de')">German</div>
+        </div>
+
+        <h2 id="ui-title">Driver Work Entry</h2>
         <form id="truckingForm">
             
             <div class="form-group">
-                <label>Date *</label>
+                <label id="ui-date">Date *</label>
                 <input type="date" id="date" required>
             </div>
 
             <div class="form-group">
-                <label>Week Number</label>
+                <label id="ui-week">Week Number</label>
                 <input type="number" id="weekNumber" required readonly>
             </div>
 
             <div class="form-group">
-                <label>Driver Name *</label>
+                <label id="ui-driver">Driver Name *</label>
                 <input type="text" id="driver" required placeholder="Type your name...">
             </div>
 
             <div class="form-group">
-                <label>Client Name *</label>
+                <label id="ui-client">Client Name *</label>
                 <input type="text" id="client" required placeholder="Type client name...">
             </div>
 
             <div class="form-group">
-                <label>Truck License</label>
+                <label id="ui-truck">Truck License</label>
                 <input type="text" id="truckLicense" placeholder="e.g. 75-BLT-6">
             </div>
 
             <div class="form-group">
-                <label>Trailer License</label>
+                <label id="ui-trailer">Trailer License</label>
                 <input type="text" id="trailerLicense" placeholder="e.g. ON-29-FH">
             </div>
 
             <div class="form-group">
-                <label>Start Time *</label>
+                <label id="ui-start-time">Start Time *</label>
                 <input type="datetime-local" id="beginTime" required>
             </div>
 
             <div class="form-group">
-                <label>End Time *</label>
+                <label id="ui-end-time">End Time *</label>
                 <input type="datetime-local" id="eindTime" required>
             </div>
 
             <div class="form-group">
-                <label>Break Time</label>
+                <label id="ui-break-time">Break Time</label>
                 <div class="flex-row">
                     <div class="flex-item">
                         <input type="number" id="breakHours" min="0" max="24" value="0">
-                        <span class="small-label">Hours</span>
+                        <span class="small-label" id="ui-hours">Hours</span>
                     </div>
                     <div class="flex-item">
                         <input type="number" id="breakMins" min="0" max="59" value="0">
-                        <span class="small-label">Minutes</span>
+                        <span class="small-label" id="ui-minutes">Minutes</span>
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Total Hours</label>
+                <label id="ui-total-hours">Total Hours</label>
                 <input type="text" id="totalHours" readonly placeholder="0h 0m">
             </div>
 
             <div class="form-group">
-                <label>Start KM *</label>
+                <label id="ui-start-km">Start KM *</label>
                 <input type="number" id="startKm" required>
             </div>
 
             <div class="form-group">
-                <label>End KM *</label>
+                <label id="ui-end-km">End KM *</label>
                 <input type="number" id="endKm" required>
             </div>
 
             <div class="form-group">
-                <label>Total KM</label>
+                <label id="ui-total-km">Total KM</label>
                 <input type="number" id="totalKm" readonly placeholder="0">
             </div>
 
             <div class="form-group">
-                <label>Remarks</label>
+                <label id="ui-remarks">Remarks</label>
                 <input type="text" id="remarks" placeholder="Any notes...">
             </div>
 
@@ -131,6 +148,149 @@
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyg31dt5IlZRN90ns_6VF4xFe-EYetWTYKRyPAeTiryrGn6y5cfzO1aZYv1WSx9WM2tvA/exec'; 
 
         let lastSubmittedPayload = null;
+        let currentLang = 'en';
+
+        // Unified Translation Dictionary Matrix Dataset
+        const dictionary = {
+            en: {
+                title: "Driver Work Entry", date: "Date *", week: "Week Number", driver: "Driver Name *", client: "Client Name *",
+                truck: "Truck License", trailer: "Trailer License", startTime: "Start Time *", endTime: "End Time *",
+                breakTime: "Break Time", hours: "Hours", minutes: "Minutes", totalHours: "Total Hours",
+                startKm: "Start KM *", endKm: "End KM *", totalKm: "Total KM", remarks: "Remarks",
+                submit: "Submit Log", whatsapp: "Send via WhatsApp", pdf: "Download PDF", excel: "Download Excel",
+                p_driver: "Type your name...", p_client: "Type client name...", p_notes: "Any notes...",
+                submitting: "Submitting...", success: "Shift logged successfully! You can now use the optional sharing choices below.",
+                error: "Error logging shift. Check your internet connection.", alert_fill: "Please fill out and submit the log data first.",
+                pdf_title: "Driver Work Report", pdf_field: "Field", pdf_value: "Value"
+            },
+            nl: {
+                title: "Bestuurdersinvoer", date: "Datum *", week: "Weeknummer", driver: "Naam Bestuurder *", client: "Naam Klant *",
+                truck: "Vrachtwagen Kenteken", trailer: "Oplegger Kenteken", startTime: "Starttijd *", endTime: "Eindtijd *",
+                breakTime: "Pauzetijd", hours: "Uren", minutes: "Minuten", totalHours: "Totale Uren",
+                startKm: "Start KM *", endKm: "Eind KM *", totalKm: "Totale KM", remarks: "Opmerkingen",
+                submit: "Log indienen", whatsapp: "Verzenden via WhatsApp", pdf: "Download PDF", excel: "Download Excel",
+                p_driver: "Typ je naam...", p_client: "Typ klantnaam...", p_notes: "Eventuele opmerkingen...",
+                submitting: "Indienen...", success: "Shift succesvol gelogd! U kunt nu de optionele deelopties hieronder gebruiken.",
+                error: "Fout bij loggen. Controleer uw internetverbinding.", alert_fill: "Vul eerst de loggegevens in en verzend deze.",
+                pdf_title: "Chauffeur Werkrapport", pdf_field: "Veld", pdf_value: "Waarde"
+            },
+            pl: {
+                title: "Karta Pracy Kierowcy", date: "Data *", week: "Numer Tygodnia", driver: "Imię i Nazwisko Kierowcy *", client: "Nazwa Klienta *",
+                truck: "Tablica Rejestracyjna Ciężarówki", trailer: "Tablica Rejestracyjna Naczepy", startTime: "Czas Rozpoczęcia *", endTime: "Czas Zakończenia *",
+                breakTime: "Czas Przerwy", hours: "Godziny", minutes: "Minuty", totalHours: "Suma Godzin",
+                startKm: "KM Początkowy *", endKm: "KM Końcowy *", totalKm: "Suma KM", remarks: "Uwagi",
+                submit: "Prześlij Log", whatsapp: "Wyślij przez WhatsApp", pdf: "Pobierz PDF", excel: "Pobierz Excel",
+                p_driver: "Wpisz swoje imię...", p_client: "Wpisz nazwę klienta...", p_notes: "Wszelkie uwagi...",
+                submitting: "Wysyłanie...", success: "Zmiana zalogowana pomyślnie! Możesz teraz skorzystać z poniższych opcji udostępniania.",
+                error: "Błąd logowania. Sprawdź połączenie internetowe.", alert_fill: "Proszę najpierw wypełnić i przesłać dane dziennika.",
+                pdf_title: "Raport Pracy Kierowcy", pdf_field: "Pole", pdf_value: "Wartość"
+            },
+            pt: {
+                title: "Entrada de Trabalho do Motorista", date: "Data *", week: "Número da Semana", driver: "Nome do Motorista *", client: "Nome do Cliente *",
+                truck: "Matrícula do Camião", trailer: "Matrícula do Reboque", startTime: "Hora de Início *", endTime: "Hora de Fim *",
+                breakTime: "Tempo de Pausa", hours: "Horas", minutes: "Minutos", totalHours: "Total de Horas",
+                startKm: "KM Inicial *", endKm: "KM Final *", totalKm: "Total de KM", remarks: "Observações",
+                submit: "Enviar Log", whatsapp: "Enviar via WhatsApp", pdf: "Baixar PDF", excel: "Baixar Excel",
+                p_driver: "Digite seu nome...", p_client: "Digite o nome do cliente...", p_notes: "Notas adicionais...",
+                submitting: "Enviando...", success: "Turno registado com sucesso! Agora pode usar as opções de partilha abaixo.",
+                error: "Erro ao registar o turno. Verifique a sua ligação.", alert_fill: "Por favor, preencha e envie os dados do log primeiro.",
+                pdf_title: "Relatório de Trabalho do Motorista", pdf_field: "Campo", pdf_value: "Valor"
+            },
+            ro: {
+                title: "Fișă Lucru Șofer", date: "Dată *", week: "Număr Săptămână", driver: "Nume Șofer *", client: "Nume Client *",
+                truck: "Număr Înmatriculare Camion", trailer: "Număr Înmatriculare Remorcă", startTime: "Ora de Început *", endTime: "Ora de Sfârșit *",
+                breakTime: "Timp de Pauză", hours: "Ore", minutes: "Minute", totalHours: "Total Ore",
+                startKm: "KM Start *", endKm: "KM Final *", totalKm: "Total KM", remarks: "Observații",
+                submit: "Trimite Raport", whatsapp: "Trimite prin WhatsApp", pdf: "Descarcă PDF", excel: "Descarcă Excel",
+                p_driver: "Introduceți numele...", p_client: "Introduceți numele clientului...", p_notes: "Alte note...",
+                submitting: "Se trimite...", success: "Tură înregistrată cu succes! Acum puteți folosi opțiunile de partajare de mai jos.",
+                error: "Eroare la înregistrare. Verificați conexiunea la internet.", alert_fill: "Vă rugăm să completați și să trimiteți mai întâi datele de jurnal.",
+                pdf_title: "Raport de Lucru Șofer", pdf_field: "Câmp", pdf_value: "Valoare"
+            },
+            ru: {
+                title: "Отчёт о работе водителя", date: "Дата *", week: "Номер недели", driver: "Имя водителя *", client: "Имя клиента *",
+                truck: "Номер грузовика", trailer: "Номер прицепа", startTime: "Время начала *", endTime: "Время окончания *",
+                breakTime: "Время перерыва", hours: "Часы", minutes: "Минуты", totalHours: "Всего часов",
+                startKm: "Начальный пробег *", endKm: "Конечный пробег *", totalKm: "Всего КМ", remarks: "Примечания",
+                submit: "Отправить лог", whatsapp: "Отправить через WhatsApp", pdf: "Скачать PDF", excel: "Скачать Excel",
+                p_driver: "Введите ваше имя...", p_client: "Введите имя клиента...", p_notes: "Любые заметки...",
+                submitting: "Отправка...", success: "Смена успешно зарегистрирована! Теперь вы можете использовать опции обмена ниже.",
+                error: "Ошибка регистрации. Проверьте интернет-соединение.", alert_fill: "Пожалуйста, сначала заполните и отправьте данные журнала.",
+                pdf_title: "Рабочий отчет водителя", pdf_field: "Поле", pdf_value: "Значение"
+            },
+            bg: {
+                title: "Работен дневник на шофьора", date: "Дата *", week: "Номер на седмицата", driver: "Име на шофьора *", client: "Име на клиента *",
+                truck: "Регистрационен номер на камиона", trailer: "Регистрационен номер на ремаркето", startTime: "Начално време *", endTime: "Крайно време *",
+                breakTime: "Време за почивка", hours: "Часове", minutes: "Минуты", totalHours: "Общо часове",
+                startKm: "Начални КМ *", endKm: "Крайни КМ *", totalKm: "Общо КМ", remarks: "Забележки",
+                submit: "Изпрати дневник", whatsapp: "Изпрати по WhatsApp", pdf: "Изтегли PDF", excel: "Изтегли Excel",
+                p_driver: "Въведете вашето име...", p_client: "Въведете име на клиента...", p_notes: "Някакви бележки...",
+                submitting: "Изпращане...", success: "Смяната е записана успешно! Сега можете да използвате опциите за споделяне по-долу.",
+                error: "Грешка при запис. Проверете интернет връзката си.", alert_fill: "Моля, първо попълнете и изпратете данните от дневника.",
+                pdf_title: "Работен отчет на водача", pdf_field: "Поле", pdf_value: "Стойност"
+            },
+            fr: {
+                title: "Saisie de Travail du Chauffeur", date: "Date *", week: "Numéro de Semaine", driver: "Nom du Chauffeur *", client: "Nom du Client *",
+                truck: "Immatriculation Camion", trailer: "Immatriculation Remorque", startTime: "Heure de Début *", endTime: "Heure de Fin *",
+                breakTime: "Temps de Pause", hours: "Heures", minutes: "Minutes", totalHours: "Total Heures",
+                startKm: "KM Début *", endKm: "KM Fin *", totalKm: "Total KM", remarks: "Remarques",
+                submit: "Soumettre le Log", whatsapp: "Envoyer via WhatsApp", pdf: "Télécharger le PDF", excel: "Télécharger Excel",
+                p_driver: "Entrez votre nom...", p_client: "Entrez le nom du client...", p_notes: "Notes diverses...",
+                submitting: "Envoi en cours...", success: "Période enregistrée avec succès! Vous pouvez utiliser les options de partage ci-dessous.",
+                error: "Erreur de connexion. Vérifiez votre accès internet.", alert_fill: "Veuillez d'abord remplir et soumettre les données du journal.",
+                pdf_title: "Rapport de Travail du Chauffeur", pdf_field: "Champ", pdf_value: "Valeur"
+            },
+            de: {
+                title: "Arbeitszeiterfassung Fahrer", date: "Datum *", week: "Kalenderwoche", driver: "Name des Fahrers *", client: "Name des Kunden *",
+                truck: "LKW-Kennzeichen", trailer: "Trailer-Kennzeichen", startTime: "Startzeit *", endTime: "Endzeit *",
+                breakTime: "Pausenzeit", hours: "Stunden", minutes: "Minuten", totalHours: "Gesamtstunden",
+                startKm: "Start-KM *", endKm: "End-KM *", totalKm: "Gesamt-KM", remarks: "Bemerkungen",
+                submit: "Log übermitteln", whatsapp: "Per WhatsApp senden", pdf: "PDF herunterladen", excel: "Excel herunterladen",
+                p_driver: "Name eingeben...", p_client: "Kundenname eingeben...", p_notes: "Notizen...",
+                submitting: "Wird übermittelt...", success: "Schicht erfolgreich protokolliert! Sie können nun die Freigabeoptionen nutzen.",
+                error: "Übermittlungsfehler. Prüfen Sie Ihre Internetverbindung.", alert_fill: "Bitte füllen Sie zuerst die Protokolldaten aus und senden Sie diese ab.",
+                pdf_title: "Fahrer-Arbeitsbericht", pdf_field: "Feld", pdf_value: "Wert"
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            // Toggle Button Classes Styling
+            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
+            const indexMap = { en:0, nl:1, pl:2, pt:3, ro:4, ru:5, bg:6, fr:7, de:8 };
+            document.querySelectorAll('.btn-lang')[indexMap[lang]].classList.add('active');
+
+            // Apply Visual String Translation Mapping
+            const l = dictionary[lang];
+            document.getElementById('ui-title').innerText = l.title;
+            document.getElementById('ui-date').innerText = l.date;
+            document.getElementById('ui-week').innerText = l.week;
+            document.getElementById('ui-driver').innerText = l.driver;
+            document.getElementById('ui-client').innerText = l.client;
+            document.getElementById('ui-truck').innerText = l.truck;
+            document.getElementById('ui-trailer').innerText = l.trailer;
+            document.getElementById('ui-start-time').innerText = l.startTime;
+            document.getElementById('ui-end-time').innerText = l.endTime;
+            document.getElementById('ui-break-time').innerText = l.breakTime;
+            document.getElementById('ui-hours').innerText = l.hours;
+            document.getElementById('ui-minutes').innerText = l.minutes;
+            document.getElementById('ui-total-hours').innerText = l.totalHours;
+            document.getElementById('ui-start-km').innerText = l.startKm;
+            document.getElementById('ui-end-km').innerText = l.endKm;
+            document.getElementById('ui-total-km').innerText = l.totalKm;
+            document.getElementById('ui-remarks').innerText = l.remarks;
+
+            // Apply Button & Placeholders String Mapping
+            document.getElementById('submitBtn').innerText = l.submit;
+            document.getElementById('whatsappBtn').innerText = l.whatsapp;
+            document.getElementById('pdfBtn').innerText = l.pdf;
+            document.getElementById('excelBtn').innerText = l.excel;
+
+            document.getElementById('driver').placeholder = l.p_driver;
+            document.getElementById('client').placeholder = l.p_client;
+            document.getElementById('remarks').placeholder = l.p_notes;
+        }
 
         function calculateKm() {
             const start = parseFloat(document.getElementById('startKm').value) || 0;
@@ -208,10 +368,11 @@
             };
         }
 
-        // --- EXPORT FUNCTIONALITIES ---
+        // --- EXPORT ENGINE PIPELINES ---
         function generatePDF(payload) {
+            const l = dictionary[currentLang];
             if (!payload || !payload.driver) {
-                alert("Please fill out and submit the log data first.");
+                alert(l.alert_fill);
                 return;
             }
             const { jsPDF } = window.jspdf;
@@ -220,7 +381,7 @@
             doc.setFontSize(18);
             doc.setFont("helvetica", "bold");
             doc.setTextColor(44, 62, 80);
-            doc.text("Driver Work Report", 15, 20);
+            doc.text(l.pdf_title, 15, 20);
             
             const startX = 15;
             let currentY = 28;
@@ -234,24 +395,24 @@
             doc.setFontSize(11);
             doc.setFont("helvetica", "bold");
             doc.setTextColor(255, 255, 255);
-            doc.text("Field", startX + 4, currentY + 6);
-            doc.text("Value", startX + col1Width + 4, currentY + 6);
+            doc.text(l.pdf_field, startX + 4, currentY + 6);
+            doc.text(l.pdf_value, startX + col1Width + 4, currentY + 6);
             
             currentY += rowHeight;
             
             const reportRows = [
-                ["Driver", payload.driver],
-                ["Client", payload.client],
-                ["Truck", payload.truckLicense || "-"],
-                ["Trailer", payload.trailerLicense || "-"],
-                ["Start Time", payload.beginTime.replace('T', ' ')],
-                ["End Time", payload.eindTime.replace('T', ' ')],
-                ["Break Time", payload.breakTime],
-                ["Start KM", payload.startKm],
-                ["End KM", payload.endKm],
-                ["Total KM", payload.totalKm],
-                ["Total Hours", payload.totalHours],
-                ["Remarks", payload.remarks || "-"]
+                [l.driver.replace(' *',''), payload.driver],
+                [l.client.replace(' *',''), payload.client],
+                [l.truck, payload.truckLicense || "-"],
+                [l.trailer, payload.trailerLicense || "-"],
+                [l.startTime.replace(' *',''), payload.beginTime.replace('T', ' ')],
+                [l.endTime.replace(' *',''), payload.eindTime.replace('T', ' ')],
+                [l.breakTime, payload.breakTime],
+                [l.startKm.replace(' *',''), payload.startKm],
+                [l.endKm.replace(' *',''), payload.endKm],
+                [l.totalKm, payload.totalKm],
+                [l.totalHours, payload.totalHours],
+                [l.remarks, payload.remarks || "-"]
             ];
             
             reportRows.forEach((row, index) => {
@@ -261,7 +422,6 @@
                     doc.setFillColor(255, 255, 255);
                 }
                 doc.rect(startX, currentY, tableWidth, rowHeight, "F");
-                
                 doc.setDrawColor(220, 224, 230);
                 doc.rect(startX, currentY, tableWidth, rowHeight, "D");
                 
@@ -277,65 +437,63 @@
         }
 
         function generateExcel(payload) {
+            const l = dictionary[currentLang];
             if (!payload || !payload.driver) {
-                alert("Please fill out and submit the log data first.");
+                alert(l.alert_fill);
                 return;
             }
             
-            // Build cell structure array
             const dataRows = [
-                ["Field", "Value"],
-                ["Week Number", payload.weekNumber],
-                ["Date", payload.datum],
-                ["Driver Name", payload.driver],
-                ["Client Name", payload.client],
-                ["Truck License", payload.truckLicense || "-"],
-                ["Trailer License", payload.trailerLicense || "-"],
-                ["Start Time", payload.beginTime.replace('T', ' ')],
-                ["End Time", payload.eindTime.replace('T', ' ')],
-                ["Break Time", payload.breakTime],
-                ["Total Hours", payload.totalHours],
-                ["Start KM", payload.startKm],
-                ["End KM", payload.endKm],
-                ["Total KM", payload.totalKm],
-                ["Remarks", payload.remarks || "-"]
+                [l.pdf_field, l.pdf_value],
+                [l.week, payload.weekNumber],
+                [l.date.replace(' *',''), payload.datum],
+                [l.driver.replace(' *',''), payload.driver],
+                [l.client.replace(' *',''), payload.client],
+                [l.truck, payload.truckLicense || "-"],
+                [l.trailer, payload.trailerLicense || "-"],
+                [l.startTime.replace(' *',''), payload.beginTime.replace('T', ' ')],
+                [l.endTime.replace(' *',''), payload.eindTime.replace('T', ' ')],
+                [l.breakTime, payload.breakTime],
+                [l.totalHours, payload.totalHours],
+                [l.startKm.replace(' *',''), payload.startKm],
+                [l.endKm.replace(' *',''), payload.endKm],
+                [l.totalKm, payload.totalKm],
+                [l.remarks, payload.remarks || "-"]
             ];
 
-            // Initialize SheetJS processing structures
             const worksheet = XLSX.utils.aoa_to_sheet(dataRows);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Shift Log");
-
-            // Write and download true XLSX binary spreadsheet format
             XLSX.writeFile(workbook, "Shift_Log_" + payload.datum + ".xlsx");
         }
 
         function sendWhatsApp(payload) {
+            const l = dictionary[currentLang];
             if (!payload || !payload.driver) {
-                alert("Please fill out and submit the log data first.");
+                alert(l.alert_fill);
                 return;
             }
             let msg = "DRIVER SHIFT REPORT\n";
             msg += "------------------------\n";
-            msg += "Date: " + payload.datum + "\n";
-            msg += "Driver: " + payload.driver + "\n";
-            msg += "Client: " + payload.client + "\n";
-            msg += "Truck: " + (payload.truckLicense || "-") + "\n";
-            msg += "Trailer: " + (payload.trailerLicense || "-") + "\n";
-            msg += "Start Time: " + payload.beginTime.replace('T', ' ') + "\n";
-            msg += "End Time: " + payload.eindTime.replace('T', ' ') + "\n";
-            msg += "Break Time: " + payload.breakTime + "\n";
-            msg += "Total Hours: " + payload.totalHours + "\n";
-            msg += "Start KM: " + payload.startKm + "\n";
-            msg += "End KM: " + payload.endKm + "\n";
-            msg += "Total KM: " + payload.totalKm + "\n";
-            msg += "Remarks: " + (payload.remarks || "-");
+            msg += l.date.replace(' *','') + ": " + payload.datum + "\n";
+            msg += l.driver.replace(' *','') + ": " + payload.driver + "\n";
+            msg += l.client.replace(' *','') + ": " + payload.client + "\n";
+            msg += l.truck + ": " + (payload.truckLicense || "-") + "\n";
+            msg += l.trailer + ": " + (payload.trailerLicense || "-") + "\n";
+            msg += l.startTime.replace(' *','') + ": " + payload.beginTime.replace('T', ' ') + "\n";
+            msg += l.endTime.replace(' *','') + ": " + payload.eindTime.replace('T', ' ') + "\n";
+            msg += l.breakTime + ": " + payload.breakTime + "\n";
+            msg += l.totalHours + ": " + payload.totalHours + "\n";
+            msg += l.startKm.replace(' *','') + ": " + payload.startKm + "\n";
+            msg += l.endKm.replace(' *','') + ": " + payload.endKm + "\n";
+            msg += l.totalKm + ": " + payload.totalKm + "\n";
+            msg += l.remarks + ": " + (payload.remarks || "-");
 
             const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
             window.open(url, '_blank');
         }
 
-        // --- BUTTON EVENT LISTENERS ---
+        // --- INTERFACE EVENT LISTENERS ---
         document.getElementById('whatsappBtn').addEventListener('click', () => {
             const activePayload = lastSubmittedPayload || generateCurrentPayload();
             sendWhatsApp(activePayload);
@@ -359,7 +517,7 @@
             lastSubmittedPayload = payload; 
 
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerText = "Submitting...";
+            submitBtn.innerText = dictionary[currentLang].submitting;
             submitBtn.style.backgroundColor = "#6c757d";
 
             fetch(GOOGLE_SCRIPT_URL, {
@@ -369,7 +527,7 @@
             .then(response => response.json())
             .then(data => {
                 if(data.status === 'success') {
-                    alert('Shift logged successfully! You can now use the optional sharing choices below.');
+                    alert(dictionary[currentLang].success);
                     
                     document.getElementById('truckingForm').reset();
                     document.getElementById('totalHours').value = "";
@@ -377,12 +535,12 @@
                     document.getElementById('breakHours').value = "0";
                     document.getElementById('breakMins').value = "0";
                 }
-                submitBtn.innerText = "Submit Log";
+                submitBtn.innerText = dictionary[currentLang].submit;
                 submitBtn.style.backgroundColor = "#28a745";
             })
             .catch(error => {
-                alert('Error logging shift. Check your internet connection.');
-                submitBtn.innerText = "Submit Log";
+                alert(dictionary[currentLang].error);
+                submitBtn.innerText = dictionary[currentLang].submit;
                 submitBtn.style.backgroundColor = "#28a745";
             });
         });
