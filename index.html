@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Work Entry</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; background-color: #f4f7f6; }
         .form-container { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
@@ -129,7 +130,6 @@
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyg31dt5IlZRN90ns_6VF4xFe-EYetWTYKRyPAeTiryrGn6y5cfzO1aZYv1WSx9WM2tvA/exec'; 
 
-        // Cache variable to safely preserve the last dataset for sharing after form resets
         let lastSubmittedPayload = null;
 
         function calculateKm() {
@@ -281,29 +281,33 @@
                 alert("Please fill out and submit the log data first.");
                 return;
             }
-            let csvContent = "data:text/csv;charset=utf-8,Field,Value\n";
-            csvContent += "Week Number," + payload.weekNumber + "\n";
-            csvContent += "Date," + payload.datum + "\n";
-            csvContent += "Driver," + payload.driver + "\n";
-            csvContent += "Client," + payload.client + "\n";
-            csvContent += "Truck License," + (payload.truckLicense || "-") + "\n";
-            csvContent += "Trailer License," + (payload.trailerLicense || "-") + "\n";
-            csvContent += "Start Time," + payload.beginTime.replace('T', ' ') + "\n";
-            csvContent += "End Time," + payload.eindTime.replace('T', ' ') + "\n";
-            csvContent += "Break Time," + payload.breakTime + "\n";
-            csvContent += "Total Hours," + payload.totalHours + "\n";
-            csvContent += "Start KM," + payload.startKm + "\n";
-            csvContent += "End KM," + payload.endKm + "\n";
-            csvContent += "Total KM," + payload.totalKm + "\n";
-            csvContent += "Remarks," + (payload.remarks || "-") + "\n";
+            
+            // Build cell structure array
+            const dataRows = [
+                ["Field", "Value"],
+                ["Week Number", payload.weekNumber],
+                ["Date", payload.datum],
+                ["Driver Name", payload.driver],
+                ["Client Name", payload.client],
+                ["Truck License", payload.truckLicense || "-"],
+                ["Trailer License", payload.trailerLicense || "-"],
+                ["Start Time", payload.beginTime.replace('T', ' ')],
+                ["End Time", payload.eindTime.replace('T', ' ')],
+                ["Break Time", payload.breakTime],
+                ["Total Hours", payload.totalHours],
+                ["Start KM", payload.startKm],
+                ["End KM", payload.endKm],
+                ["Total KM", payload.totalKm],
+                ["Remarks", payload.remarks || "-"]
+            ];
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Shift_Log_" + payload.datum + ".csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Initialize SheetJS processing structures
+            const worksheet = XLSX.utils.aoa_to_sheet(dataRows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Shift Log");
+
+            // Write and download true XLSX binary spreadsheet format
+            XLSX.writeFile(workbook, "Shift_Log_" + payload.datum + ".xlsx");
         }
 
         function sendWhatsApp(payload) {
@@ -352,7 +356,7 @@
             e.preventDefault();
             
             const payload = generateCurrentPayload();
-            lastSubmittedPayload = payload; // Lock current data into memory block
+            lastSubmittedPayload = payload; 
 
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.innerText = "Submitting...";
@@ -367,7 +371,6 @@
                 if(data.status === 'success') {
                     alert('Shift logged successfully! You can now use the optional sharing choices below.');
                     
-                    // Clear out inputs safely on screen
                     document.getElementById('truckingForm').reset();
                     document.getElementById('totalHours').value = "";
                     document.getElementById('totalKm').value = "";
