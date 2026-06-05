@@ -150,7 +150,6 @@
         let lastSubmittedPayload = null;
         let currentLang = 'en';
 
-        // Unified Translation Dictionary Matrix Dataset
         const dictionary = {
             en: {
                 title: "Driver Work Entry", date: "Date *", week: "Week Number", driver: "Driver Name *", client: "Client Name *",
@@ -256,12 +255,10 @@
         function setLanguage(lang) {
             currentLang = lang;
             
-            // Toggle Button Classes Styling
             document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
             const indexMap = { en:0, nl:1, pl:2, pt:3, ro:4, ru:5, bg:6, fr:7, de:8 };
             document.querySelectorAll('.btn-lang')[indexMap[lang]].classList.add('active');
 
-            // Apply Visual String Translation Mapping
             const l = dictionary[lang];
             document.getElementById('ui-title').innerText = l.title;
             document.getElementById('ui-date').innerText = l.date;
@@ -281,7 +278,6 @@
             document.getElementById('ui-total-km').innerText = l.totalKm;
             document.getElementById('ui-remarks').innerText = l.remarks;
 
-            // Apply Button & Placeholders String Mapping
             document.getElementById('submitBtn').innerText = l.submit;
             document.getElementById('whatsappBtn').innerText = l.whatsapp;
             document.getElementById('pdfBtn').innerText = l.pdf;
@@ -528,12 +524,7 @@
             .then(data => {
                 if(data.status === 'success') {
                     alert(dictionary[currentLang].success);
-                    
-                    document.getElementById('truckingForm').reset();
-                    document.getElementById('totalHours').value = "";
-                    document.getElementById('totalKm').value = "";
-                    document.getElementById('breakHours').value = "0";
-                    document.getElementById('breakMins').value = "0";
+                    // The clear/reset lines have been removed from here so data stays on screen
                 }
                 submitBtn.innerText = dictionary[currentLang].submit;
                 submitBtn.style.backgroundColor = "#28a745";
