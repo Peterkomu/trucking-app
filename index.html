@@ -429,7 +429,19 @@
                 currentY += rowHeight;
             });
             
-            doc.save("Shift_Log_" + payload.datum + ".pdf");
+            const fileName = "Shift_Log_" + payload.datum + ".pdf";
+            const pdfBlob = doc.output('blob');
+            const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+            // iOS / Mobile Native Share Sheet Fallback
+            if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                navigator.share({
+                    files: [pdfFile],
+                    title: fileName
+                }).catch(e => console.log('Share canceled or failed', e));
+            } else {
+                doc.save(fileName);
+            }
         }
 
         function generateExcel(payload) {
@@ -460,7 +472,21 @@
             const worksheet = XLSX.utils.aoa_to_sheet(dataRows);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Shift Log");
-            XLSX.writeFile(workbook, "Shift_Log_" + payload.datum + ".xlsx");
+            
+            const fileName = "Shift_Log_" + payload.datum + ".xlsx";
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const excelFile = new File([excelBlob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+            // iOS / Mobile Native Share Sheet Fallback
+            if (navigator.canShare && navigator.canShare({ files: [excelFile] })) {
+                navigator.share({
+                    files: [excelFile],
+                    title: fileName
+                }).catch(e => console.log('Share canceled or failed', e));
+            } else {
+                XLSX.writeFile(workbook, fileName);
+            }
         }
 
         function sendWhatsApp(payload) {
@@ -486,7 +512,9 @@
             msg += l.remarks + ": " + (payload.remarks || "-");
 
             const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
-            window.open(url, '_blank');
+            
+            // Replaced window.open with window.location for better iPhone compatibility
+            window.location.href = url;
         }
 
         // --- INTERFACE EVENT LISTENERS ---
@@ -524,7 +552,6 @@
             .then(data => {
                 if(data.status === 'success') {
                     alert(dictionary[currentLang].success);
-                    // The clear/reset lines have been removed from here so data stays on screen
                 }
                 submitBtn.innerText = dictionary[currentLang].submit;
                 submitBtn.style.backgroundColor = "#28a745";
