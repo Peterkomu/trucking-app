@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DN Flex - Driver Work Entry</title>
 
-    <!-- More professional font pairing -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
         body { 
             font-family: 'Manrope', 'Segoe UI', Tahoma, sans-serif; 
@@ -19,8 +19,8 @@
             max-width: 500px; 
             margin: auto; 
             background:
-                linear-gradient(rgba(10, 18, 28, 0.58), rgba(10, 18, 28, 0.68)),
-                url('https://github.com/Peterkomu/trucking-app/blob/main/e837f70f2fad49146e9e778f89819350.jpg?raw=true') no-repeat center center fixed;
+                linear-gradient(rgba(10, 18, 28, 0.45), rgba(10, 18, 28, 0.55)),
+                url('https://raw.githubusercontent.com/Peterkomu/trucking-app/main/e837f70f2fad49146e9e778f89819350.jpg') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh; 
         }
@@ -242,7 +242,6 @@
         </div>
         
         <form id="truckingForm">
-            
             <div class="form-group">
                 <label id="ui-date">Date *</label>
                 <input type="date" id="date" required>
@@ -479,12 +478,13 @@
         function calculateKm() {
             const start = parseFloat(document.getElementById('startKm').value) || 0;
             const end = parseFloat(document.getElementById('endKm').value) || 0;
-            if(end > start) {
+            if (end > start) {
                 document.getElementById('totalKm').value = end - start;
             } else {
                 document.getElementById('totalKm').value = "";
             }
         }
+
         document.getElementById('startKm').addEventListener('input', calculateKm);
         document.getElementById('endKm').addEventListener('input', calculateKm);
 
@@ -494,7 +494,7 @@
             const bHours = parseInt(document.getElementById('breakHours').value) || 0;
             const bMins = parseInt(document.getElementById('breakMins').value) || 0;
 
-            if(begin && end) {
+            if (begin && end) {
                 const beginDate = new Date(begin);
                 const endDate = new Date(end);
                 let diffMs = endDate - beginDate;
@@ -521,13 +521,13 @@
         document.getElementById('breakMins').addEventListener('input', calculateHours);
 
         document.getElementById('date').addEventListener('change', function(e) {
-            if(!e.target.value) return;
+            if (!e.target.value) return;
             const date = new Date(e.target.value);
             const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
             const dayNum = d.getUTCDay() || 7;
             d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
             document.getElementById('weekNumber').value = weekNo;
         });
 
@@ -558,6 +558,7 @@
                 alert(l.alert_fill);
                 return;
             }
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
@@ -599,11 +600,7 @@
             ];
             
             reportRows.forEach((row, index) => {
-                if (index % 2 === 0) {
-                    doc.setFillColor(245, 247, 250);
-                } else {
-                    doc.setFillColor(255, 255, 255);
-                }
+                doc.setFillColor(index % 2 === 0 ? 245 : 255, index % 2 === 0 ? 247 : 255, index % 2 === 0 ? 250 : 255);
                 doc.rect(startX, currentY, tableWidth, rowHeight, "F");
                 doc.setDrawColor(220, 224, 230);
                 doc.rect(startX, currentY, tableWidth, rowHeight, "D");
@@ -680,6 +677,7 @@
                 alert(l.alert_fill);
                 return;
             }
+
             let msg = "DN FLEX DRIVER REPORT\n";
             msg += "------------------------\n";
             msg += l.date.replace(' *','') + ": " + payload.datum + "\n";
@@ -731,7 +729,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                if(data.status === 'success') {
+                if (data.status === 'success') {
                     alert(dictionary[currentLang].success);
                 }
                 submitBtn.innerText = dictionary[currentLang].submit;
