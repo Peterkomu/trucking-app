@@ -7,34 +7,63 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; background-color: #f4f7f6; }
-        .form-container { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px;}
-        input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;}
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 20px; 
+            max-width: 500px; 
+            margin: auto; 
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); 
+            min-height: 100vh; 
+        }
+        .form-container { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            border-top: 6px solid #337ab7; 
+        }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; font-size: 14px;}
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            box-sizing: border-box; 
+            border: 1px solid #ced4da; 
+            border-radius: 6px; 
+            font-size: 15px; 
+            background-color: #f8f9fa; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input:focus, select:focus { 
+            outline: none; 
+            border-color: #80bdff; 
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); 
+            background-color: #fff; 
+        }
         input[readonly] { background-color: #e9ecef; cursor: not-allowed; color: #666; font-weight: bold;}
         
         /* Language Selector Toolbar Layout */
-        .lang-container { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee;}
-        .btn-lang { background-color: #e0e0e0; color: #333; padding: 8px 12px; font-size: 13px; font-weight: normal; border-radius: 4px; width: auto; margin-top: 0; display: inline-block; cursor: pointer; border: 1px solid #ccc;}
-        .btn-lang.active { background-color: #337ab7; color: white; border-color: #2e6da4; font-weight: bold; }
+        .lang-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eaeaea;}
+        .btn-lang { background-color: #f1f3f5; color: #495057; padding: 8px 14px; font-size: 13px; font-weight: 500; border-radius: 20px; width: auto; margin-top: 0; display: inline-block; cursor: pointer; border: 1px solid #dae0e5; transition: all 0.2s;}
+        .btn-lang.active { background-color: #337ab7; color: white; border-color: #2e6da4; box-shadow: 0 2px 4px rgba(51,122,183,0.3); }
         
         /* Action Buttons Styling */
-        button { width: 100%; padding: 14px; border: none; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 12px; display: block;}
-        .btn-submit { background-color: #28a745; color: white; }
-        .btn-submit:hover { background-color: #218838; }
-        .btn-whatsapp { background-color: #25D366; color: white; }
-        .btn-whatsapp:hover { background-color: #1ebd56; }
-        .btn-pdf { background-color: #d9534f; color: white; }
-        .btn-pdf:hover { background-color: #c9302c; }
-        .btn-excel { background-color: #4caf50; color: white; }
-        .btn-excel:hover { background-color: #388e3c; }
+        button { width: 100%; padding: 14px; border: none; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; margin-top: 12px; display: block; transition: transform 0.1s, box-shadow 0.2s;}
+        button:active { transform: scale(0.98); }
+        .btn-submit { background-color: #28a745; color: white; box-shadow: 0 4px 6px rgba(40,167,69,0.2); }
+        .btn-submit:hover { background-color: #218838; box-shadow: 0 6px 10px rgba(40,167,69,0.3); }
+        .btn-whatsapp { background-color: #25D366; color: white; box-shadow: 0 4px 6px rgba(37,211,102,0.2); }
+        .btn-whatsapp:hover { background-color: #1ebd56; box-shadow: 0 6px 10px rgba(37,211,102,0.3); }
+        .btn-pdf { background-color: #d9534f; color: white; box-shadow: 0 4px 6px rgba(217,83,79,0.2); }
+        .btn-pdf:hover { background-color: #c9302c; box-shadow: 0 6px 10px rgba(217,83,79,0.3); }
+        .btn-excel { background-color: #4caf50; color: white; box-shadow: 0 4px 6px rgba(76,175,80,0.2); }
+        .btn-excel:hover { background-color: #388e3c; box-shadow: 0 6px 10px rgba(76,175,80,0.3); }
         
-        h2 { text-align: center; color: #2c3e50; margin-top: 0;}
+        h2 { text-align: center; color: #2c3e50; margin-top: 0; font-weight: 700; letter-spacing: 0.5px;}
         .flex-row { display: flex; gap: 10px; }
         .flex-item { flex: 1; }
-        .small-label { display: block; font-size: 12px; color: #666; margin-top: 4px; text-align: center;}
-        .extra-actions { margin-top: 5px; }
+        .small-label { display: block; font-size: 12px; color: #777; margin-top: 6px; text-align: center; font-weight: 500;}
+        .extra-actions { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee; }
     </style>
 </head>
 <body>
@@ -433,7 +462,6 @@
             const pdfBlob = doc.output('blob');
             const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
-            // iOS / Mobile Native Share Sheet Fallback
             if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
                 navigator.share({
                     files: [pdfFile],
@@ -478,7 +506,6 @@
             const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             const excelFile = new File([excelBlob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-            // iOS / Mobile Native Share Sheet Fallback
             if (navigator.canShare && navigator.canShare({ files: [excelFile] })) {
                 navigator.share({
                     files: [excelFile],
@@ -513,7 +540,6 @@
 
             const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
             
-            // Replaced window.open with window.location for better iPhone compatibility
             window.location.href = url;
         }
 
