@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DN Flex - Driver Work Entry</title>
     
+    <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
     
+    <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
@@ -18,56 +20,28 @@
             padding: 20px; 
             max-width: 500px; 
             margin: auto; 
-            /* REPLACED WITH YOUR IMAGE LINK BELOW */
-            background: linear-gradient(rgba(15, 32, 39, 0.7), rgba(32, 58, 67, 0.75)), url('https://raw.githubusercontent.com/Peterkomu/trucking-app/main/e837f70f2fad49146e9e778f89819350.jpg') no-repeat center center fixed; 
+            /* Your DAF truck image background */
+            background: linear-gradient(rgba(15, 32, 39, 0.7), rgba(32, 58, 67, 0.75)), url('https://github.com/Peterkomu/trucking-app/blob/main/e837f70f2fad49146e9e778f89819350.jpg?raw=true') no-repeat center center fixed; 
             background-size: cover;
             min-height: 100vh; 
         }
-        .form-container { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
-            border-top: 6px solid #d32f2f; 
-        }
-        
+        .form-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border-top: 6px solid #d32f2f; }
         .header-brand { text-align: center; margin-bottom: 25px; }
-        .header-brand h1 { 
-            font-family: 'Oswald', sans-serif; 
-            color: #1a1a1a; 
-            margin: 0 0 5px 0; 
-            font-size: 42px; 
-            letter-spacing: 2px; 
-            text-transform: uppercase; 
-            font-weight: 700; 
-        }
+        .header-brand h1 { font-family: 'Oswald', sans-serif; color: #1a1a1a; margin: 0 0 5px 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
         .header-brand h1 span { color: #d32f2f; }
         .header-brand h3 { color: #64748b; margin: 0; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
-
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 6px; font-weight: 600; color: #334155; font-size: 14px;}
-        input { 
-            width: 100%; 
-            padding: 12px; 
-            box-sizing: border-box; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 6px; 
-            font-size: 15px; 
-            background-color: #f8fafc; 
-            transition: all 0.3s;
-        }
+        input { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; background-color: #f8fafc; transition: all 0.3s; }
         input:focus { outline: none; border-color: #d32f2f; box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.15); }
-        
         .lang-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9;}
         .btn-lang { background-color: #f1f5f9; color: #475569; padding: 8px 14px; font-size: 13px; font-weight: 600; border-radius: 20px; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s;}
         .btn-lang.active { background-color: #1a1a1a; color: white; border-color: #000; }
-        
         button { width: 100%; padding: 14px; border: none; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; margin-top: 12px; display: block; }
         .btn-submit { background-color: #28a745; color: white; }
         .btn-whatsapp { background-color: #25D366; color: white; }
         .btn-pdf { background-color: #d9534f; color: white; }
         .btn-excel { background-color: #4caf50; color: white; }
-        
         .flex-row { display: flex; gap: 10px; }
         .flex-item { flex: 1; }
         .small-label { display: block; font-size: 12px; color: #64748b; margin-top: 6px; text-align: center; }
@@ -87,12 +61,7 @@
             <div class="btn-lang" onclick="setLanguage('fr')">French</div>
             <div class="btn-lang" onclick="setLanguage('de')">German</div>
         </div>
-
-        <div class="header-brand">
-            <h1>DN <span>Flex</span></h1>
-            <h3 id="ui-title">Driver Work Entry</h3>
-        </div>
-        
+        <div class="header-brand"><h1>DN <span>Flex</span></h1><h3 id="ui-title">Driver Work Entry</h3></div>
         <form id="truckingForm">
             <div class="form-group"><label id="ui-date">Date *</label><input type="date" id="date" required></div>
             <div class="form-group"><label id="ui-week">Week Number</label><input type="number" id="weekNumber" required readonly></div>
@@ -115,19 +84,15 @@
             <div class="form-group"><label id="ui-remarks">Remarks</label><input type="text" id="remarks" placeholder="Any notes..."></div>
             <button type="submit" class="btn-submit" id="submitBtn">Submit Log</button>
         </form>
-
         <div class="extra-actions">
             <button type="button" class="btn-whatsapp" id="whatsappBtn">Send via WhatsApp</button>
             <button type="button" class="btn-pdf" id="pdfBtn">Download PDF</button>
             <button type="button" class="btn-excel" id="excelBtn">Download Excel</button>
         </div>
     </div>
-
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyg31dt5IlZRN90ns_6VF4xFe-EYetWTYKRyPAeTiryrGn6y5cfzO1aZYv1WSx9WM2tvA/exec';
-        let lastSubmittedPayload = null; 
-        let currentLang = 'en';
-
+        let lastSubmittedPayload = null; let currentLang = 'en';
         const dictionary = {
             en: { title: "Driver Work Entry", date: "Date *", week: "Week Number", driver: "Driver Name *", client: "Client Name *", truck: "Truck License", trailer: "Trailer License", startTime: "Start Time *", endTime: "End Time *", breakTime: "Break Time", hours: "Hours", minutes: "Minutes", totalHours: "Total Hours", startKm: "Start KM *", endKm: "End KM *", totalKm: "Total KM", remarks: "Remarks", submit: "Submit Log", whatsapp: "Send via WhatsApp", pdf: "Download PDF", excel: "Download Excel", p_driver: "Type your name...", p_client: "Type client name...", p_notes: "Any notes...", submitting: "Submitting...", success: "Shift logged successfully!", error: "Error. Check connection.", alert_fill: "Fill data first.", pdf_title: "Driver Work Report", pdf_field: "Field", pdf_value: "Value" },
             nl: { title: "Bestuurdersinvoer", date: "Datum *", week: "Weeknummer", driver: "Naam Bestuurder *", client: "Naam Klant *", truck: "Vrachtwagen Kenteken", trailer: "Oplegger Kenteken", startTime: "Starttijd *", endTime: "Eindtijd *", breakTime: "Pauzetijd", hours: "Uren", minutes: "Minuten", totalHours: "Totale Uren", startKm: "Start KM *", endKm: "Eind KM *", totalKm: "Totale KM", remarks: "Opmerkingen", submit: "Log indienen", whatsapp: "Verzenden via WhatsApp", pdf: "Download PDF", excel: "Download Excel", p_driver: "Typ je naam...", p_client: "Typ klantnaam...", p_notes: "Eventuele opmerkingen...", submitting: "Indienen...", success: "Shift succesvol gelogd!", error: "Fout. Controleer verbinding.", alert_fill: "Vul eerst de gegevens in.", pdf_title: "Chauffeur Werkrapport", pdf_field: "Veld", pdf_value: "Waarde" },
@@ -139,132 +104,20 @@
             fr: { title: "Saisie de Travail du Chauffeur", date: "Date *", week: "Numéro de Semaine", driver: "Nom du Chauffeur *", client: "Nom du Client *", truck: "Immatriculation Camion", trailer: "Immatriculation Remorque", startTime: "Heure de Début *", endTime: "Heure de Fin *", breakTime: "Temps de Pause", hours: "Heures", minutes: "Minutes", totalHours: "Total Heures", startKm: "KM Début *", endKm: "KM Fin *", totalKm: "Total KM", remarks: "Remarques", submit: "Soumettre le Log", whatsapp: "Envoyer via WhatsApp", pdf: "Télécharger le PDF", excel: "Télécharger Excel", p_driver: "Entrez votre nom...", p_client: "Entrez le nom du client...", p_notes: "Notes diverses...", submitting: "Envoi en cours...", success: "Période enregistrée!", error: "Erreur de connexion.", alert_fill: "Veuillez remplir les données.", pdf_title: "Rapport de Travail du Chauffeur", pdf_field: "Champ", pdf_value: "Valeur" },
             de: { title: "Arbeitszeiterfassung Fahrer", date: "Datum *", week: "Kalenderwoche", driver: "Name des Fahrers *", client: "Name des Kunden *", truck: "LKW-Kennzeichen", trailer: "Trailer-Kennzeichen", startTime: "Startzeit *", endTime: "Endzeit *", breakTime: "Pausenzeit", hours: "Stunden", minutes: "Minuten", totalHours: "Gesamtstunden", startKm: "Start-KM *", endKm: "End-KM *", totalKm: "Gesamt-KM", remarks: "Bemerkungen", submit: "Log übermitteln", whatsapp: "Per WhatsApp senden", pdf: "PDF herunterladen", excel: "Excel herunterladen", p_driver: "Name eingeben...", p_client: "Kundenname eingeben...", p_notes: "Notizen...", submitting: "Wird übermittelt...", success: "Schicht erfolgreich protokolliert!", error: "Fehler. Prüfen Sie Verbindung.", alert_fill: "Bitte Daten ausfüllen.", pdf_title: "Fahrer-Arbeitsbericht", pdf_field: "Feld", pdf_value: "Wert" }
         };
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active'));
-            const indexMap = { en:0, nl:1, pl:2, pt:3, ro:4, ru:5, bg:6, fr:7, de:8 };
-            document.querySelectorAll('.btn-lang')[indexMap[lang]].classList.add('active');
-            const l = dictionary[lang];
-            document.getElementById('ui-title').innerText = l.title; document.getElementById('ui-date').innerText = l.date; document.getElementById('ui-week').innerText = l.week; document.getElementById('ui-driver').innerText = l.driver; document.getElementById('ui-client').innerText = l.client; document.getElementById('ui-truck').innerText = l.truck; document.getElementById('ui-trailer').innerText = l.trailer; document.getElementById('ui-start-time').innerText = l.startTime; document.getElementById('ui-end-time').innerText = l.endTime; document.getElementById('ui-break-time').innerText = l.breakTime; document.getElementById('ui-hours').innerText = l.hours; document.getElementById('ui-minutes').innerText = l.minutes; document.getElementById('ui-total-hours').innerText = l.totalHours; document.getElementById('ui-start-km').innerText = l.startKm; document.getElementById('ui-end-km').innerText = l.endKm; document.getElementById('ui-total-km').innerText = l.totalKm; document.getElementById('ui-remarks').innerText = l.remarks;
-            document.getElementById('submitBtn').innerText = l.submit; document.getElementById('whatsappBtn').innerText = l.whatsapp; document.getElementById('pdfBtn').innerText = l.pdf; document.getElementById('excelBtn').innerText = l.excel;
-            document.getElementById('driver').placeholder = l.p_driver; document.getElementById('client').placeholder = l.p_client; document.getElementById('remarks').placeholder = l.p_notes;
-        }
-
-        function calculateKm() {
-            const start = parseFloat(document.getElementById('startKm').value) || 0;
-            const end = parseFloat(document.getElementById('endKm').value) || 0;
-            if(end > start) document.getElementById('totalKm').value = end - start;
-            else document.getElementById('totalKm').value = "";
-        }
-        document.getElementById('startKm').addEventListener('input', calculateKm);
-        document.getElementById('endKm').addEventListener('input', calculateKm);
-
-        function calculateHours() {
-            const begin = document.getElementById('beginTime').value;
-            const end = document.getElementById('eindTime').value;
-            const bHours = parseInt(document.getElementById('breakHours').value) || 0;
-            const bMins = parseInt(document.getElementById('breakMins').value) || 0;
-            if(begin && end) {
-                const beginDate = new Date(begin);
-                const endDate = new Date(end);
-                let diffMs = endDate - beginDate;
-                if (diffMs > 0) {
-                    const breakMs = ((bHours * 60) + bMins) * 60000;
-                    diffMs -= breakMs;
-                    if (diffMs > 0) {
-                        const totalMins = Math.floor(diffMs / 60000);
-                        const h = Math.floor(totalMins / 60);
-                        const m = totalMins % 60;
-                        document.getElementById('totalHours').value = h + "h " + m + "m";
-                    } else document.getElementById('totalHours').value = "0h 0m";
-                }
-            }
-        }
-        document.getElementById('beginTime').addEventListener('input', calculateHours);
-        document.getElementById('eindTime').addEventListener('input', calculateHours);
-        document.getElementById('breakHours').addEventListener('input', calculateHours);
-        document.getElementById('breakMins').addEventListener('input', calculateHours);
-
-        document.getElementById('date').addEventListener('change', function(e) {
-            if(!e.target.value) return;
-            const date = new Date(e.target.value);
-            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-            const dayNum = d.getUTCDay() || 7;
-            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-            document.getElementById('weekNumber').value = weekNo;
-        });
-
-        function generateCurrentPayload() {
-            const bH = parseInt(document.getElementById('breakHours').value) || 0;
-            const bM = parseInt(document.getElementById('breakMins').value) || 0;
-            return {
-                weekNumber: document.getElementById('weekNumber').value, datum: document.getElementById('date').value,
-                driver: document.getElementById('driver').value, client: document.getElementById('client').value,
-                truckLicense: document.getElementById('truckLicense').value, trailerLicense: document.getElementById('trailerLicense').value,
-                beginTime: document.getElementById('beginTime').value, eindTime: document.getElementById('eindTime').value,
-                breakTime: bH + "h " + bM + "m", totalHours: document.getElementById('totalHours').value,
-                startKm: document.getElementById('startKm').value, endKm: document.getElementById('endKm').value,
-                totalKm: document.getElementById('totalKm').value, remarks: document.getElementById('remarks').value
-            };
-        }
-
-        function generatePDF(payload) {
-            const l = dictionary[currentLang];
-            if (!payload || !payload.driver) { alert(l.alert_fill); return; }
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.setTextColor(44, 62, 80); doc.text("DN Flex - " + l.pdf_title, 15, 20);
-            const startX = 15; let currentY = 28; const tableWidth = 180; const col1Width = 55; const rowHeight = 9;
-            doc.setFillColor(51, 122, 183); doc.rect(startX, currentY, tableWidth, rowHeight, "F");
-            doc.setFontSize(11); doc.setTextColor(255, 255, 255); doc.text(l.pdf_field, startX + 4, currentY + 6); doc.text(l.pdf_value, startX + col1Width + 4, currentY + 6);
-            currentY += rowHeight;
-            const reportRows = [[l.driver.replace(' *',''), payload.driver], [l.client.replace(' *',''), payload.client], [l.truck, payload.truckLicense || "-"], [l.trailer, payload.trailerLicense || "-"], [l.startTime.replace(' *',''), payload.beginTime.replace('T', ' ')], [l.endTime.replace(' *',''), payload.eindTime.replace('T', ' ')], [l.breakTime, payload.breakTime], [l.startKm.replace(' *',''), payload.startKm], [l.endKm.replace(' *',''), payload.endKm], [l.totalKm, payload.totalKm], [l.totalHours, payload.totalHours], [l.remarks, payload.remarks || "-"]];
-            reportRows.forEach((row, index) => {
-                if (index % 2 === 0) doc.setFillColor(245, 247, 250); else doc.setFillColor(255, 255, 255);
-                doc.rect(startX, currentY, tableWidth, rowHeight, "F"); doc.setDrawColor(220, 224, 230); doc.rect(startX, currentY, tableWidth, rowHeight, "D");
-                doc.setTextColor(60, 60, 60); doc.setFont("helvetica", "normal"); doc.text(row[0], startX + 4, currentY + 6); doc.text(String(row[1]), startX + col1Width + 4, currentY + 6);
-                currentY += rowHeight;
-            });
-            const fileName = "DN_Flex_Log_" + payload.datum + ".pdf"; const pdfBlob = doc.output('blob'); const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
-            if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) navigator.share({ files: [pdfFile], title: fileName }); else doc.save(fileName);
-        }
-
-        function generateExcel(payload) {
-            const l = dictionary[currentLang];
-            if (!payload || !payload.driver) { alert(l.alert_fill); return; }
-            const dataRows = [[l.pdf_field, l.pdf_value], [l.week, payload.weekNumber], [l.date.replace(' *',''), payload.datum], [l.driver.replace(' *',''), payload.driver], [l.client.replace(' *',''), payload.client], [l.truck, payload.truckLicense || "-"], [l.trailer, payload.trailerLicense || "-"], [l.startTime.replace(' *',''), payload.beginTime.replace('T', ' ')], [l.endTime.replace(' *',''), payload.eindTime.replace('T', ' ')], [l.breakTime, payload.breakTime], [l.totalHours, payload.totalHours], [l.startKm.replace(' *',''), payload.startKm], [l.endKm.replace(' *',''), payload.endKm], [l.totalKm, payload.totalKm], [l.remarks, payload.remarks || "-"]];
-            const worksheet = XLSX.utils.aoa_to_sheet(dataRows); const workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "DN Flex Log");
-            const fileName = "DN_Flex_Log_" + payload.datum + ".xlsx"; const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-            const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); const excelFile = new File([excelBlob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            if (navigator.canShare && navigator.canShare({ files: [excelFile] })) navigator.share({ files: [excelFile], title: fileName }); else XLSX.writeFile(workbook, fileName);
-        }
-
-        function sendWhatsApp(payload) {
-            const l = dictionary[currentLang];
-            if (!payload || !payload.driver) { alert(l.alert_fill); return; }
-            let msg = "DN FLEX DRIVER REPORT\n------------------------\n" + l.date.replace(' *','') + ": " + payload.datum + "\n" + l.driver.replace(' *','') + ": " + payload.driver + "\n" + l.client.replace(' *','') + ": " + payload.client + "\n" + l.truck + ": " + (payload.truckLicense || "-") + "\n" + l.trailer + ": " + (payload.trailerLicense || "-") + "\n" + l.startTime.replace(' *','') + ": " + payload.beginTime.replace('T', ' ') + "\n" + l.endTime.replace(' *','') + ": " + payload.eindTime.replace('T', ' ') + "\n" + l.breakTime + ": " + payload.breakTime + "\n" + l.totalHours + ": " + payload.totalHours + "\n" + l.startKm.replace(' *','') + ": " + payload.startKm + "\n" + l.endKm.replace(' *','') + ": " + payload.endKm + "\n" + l.totalKm + ": " + payload.totalKm + "\n" + l.remarks + ": " + (payload.remarks || "-");
-            window.location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
-        }
-
+        function setLanguage(lang) { currentLang = lang; document.querySelectorAll('.btn-lang').forEach(btn => btn.classList.remove('active')); const indexMap = { en:0, nl:1, pl:2, pt:3, ro:4, ru:5, bg:6, fr:7, de:8 }; document.querySelectorAll('.btn-lang')[indexMap[lang]].classList.add('active'); const l = dictionary[lang]; document.getElementById('ui-title').innerText = l.title; document.getElementById('ui-date').innerText = l.date; document.getElementById('ui-week').innerText = l.week; document.getElementById('ui-driver').innerText = l.driver; document.getElementById('ui-client').innerText = l.client; document.getElementById('ui-truck').innerText = l.truck; document.getElementById('ui-trailer').innerText = l.trailer; document.getElementById('ui-start-time').innerText = l.startTime; document.getElementById('ui-end-time').innerText = l.endTime; document.getElementById('ui-break-time').innerText = l.breakTime; document.getElementById('ui-hours').innerText = l.hours; document.getElementById('ui-minutes').innerText = l.minutes; document.getElementById('ui-total-hours').innerText = l.totalHours; document.getElementById('ui-start-km').innerText = l.startKm; document.getElementById('ui-end-km').innerText = l.endKm; document.getElementById('ui-total-km').innerText = l.totalKm; document.getElementById('ui-remarks').innerText = l.remarks; document.getElementById('submitBtn').innerText = l.submit; document.getElementById('whatsappBtn').innerText = l.whatsapp; document.getElementById('pdfBtn').innerText = l.pdf; document.getElementById('excelBtn').innerText = l.excel; document.getElementById('driver').placeholder = l.p_driver; document.getElementById('client').placeholder = l.p_client; document.getElementById('remarks').placeholder = l.p_notes; }
+        function calculateKm() { const start = parseFloat(document.getElementById('startKm').value) || 0; const end = parseFloat(document.getElementById('endKm').value) || 0; if(end > start) document.getElementById('totalKm').value = end - start; else document.getElementById('totalKm').value = ""; }
+        document.getElementById('startKm').addEventListener('input', calculateKm); document.getElementById('endKm').addEventListener('input', calculateKm);
+        function calculateHours() { const begin = document.getElementById('beginTime').value; const end = document.getElementById('eindTime').value; const bHours = parseInt(document.getElementById('breakHours').value) || 0; const bMins = parseInt(document.getElementById('breakMins').value) || 0; if(begin && end) { const beginDate = new Date(begin); const endDate = new Date(end); let diffMs = endDate - beginDate; if (diffMs > 0) { const breakMs = ((bHours * 60) + bMins) * 60000; diffMs -= breakMs; if (diffMs > 0) { const totalMins = Math.floor(diffMs / 60000); const h = Math.floor(totalMins / 60); const m = totalMins % 60; document.getElementById('totalHours').value = h + "h " + m + "m"; } else document.getElementById('totalHours').value = "0h 0m"; } } }
+        document.getElementById('beginTime').addEventListener('input', calculateHours); document.getElementById('eindTime').addEventListener('input', calculateHours); document.getElementById('breakHours').addEventListener('input', calculateHours); document.getElementById('breakMins').addEventListener('input', calculateHours);
+        document.getElementById('date').addEventListener('change', function(e) { if(!e.target.value) return; const date = new Date(e.target.value); const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); const dayNum = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - dayNum); const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1)); const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7); document.getElementById('weekNumber').value = weekNo; });
+        function generateCurrentPayload() { const bH = parseInt(document.getElementById('breakHours').value) || 0; const bM = parseInt(document.getElementById('breakMins').value) || 0; return { weekNumber: document.getElementById('weekNumber').value, datum: document.getElementById('date').value, driver: document.getElementById('driver').value, client: document.getElementById('client').value, truckLicense: document.getElementById('truckLicense').value, trailerLicense: document.getElementById('trailerLicense').value, beginTime: document.getElementById('beginTime').value, eindTime: document.getElementById('eindTime').value, breakTime: bH + "h " + bM + "m", totalHours: document.getElementById('totalHours').value, startKm: document.getElementById('startKm').value, endKm: document.getElementById('endKm').value, totalKm: document.getElementById('totalKm').value, remarks: document.getElementById('remarks').value }; }
+        function generatePDF(payload) { const l = dictionary[currentLang]; if (!payload || !payload.driver) { alert(l.alert_fill); return; } const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.setTextColor(44, 62, 80); doc.text("DN Flex - " + l.pdf_title, 15, 20); const startX = 15; let currentY = 28; const tableWidth = 180; const col1Width = 55; const rowHeight = 9; doc.setFillColor(51, 122, 183); doc.rect(startX, currentY, tableWidth, rowHeight, "F"); doc.setFontSize(11); doc.setTextColor(255, 255, 255); doc.text(l.pdf_field, startX + 4, currentY + 6); doc.text(l.pdf_value, startX + col1Width + 4, currentY + 6); currentY += rowHeight; const reportRows = [[l.driver.replace(' *',''), payload.driver], [l.client.replace(' *',''), payload.client], [l.truck, payload.truckLicense || "-"], [l.trailer, payload.trailerLicense || "-"], [l.startTime.replace(' *',''), payload.beginTime.replace('T', ' ')], [l.endTime.replace(' *',''), payload.eindTime.replace('T', ' ')], [l.breakTime, payload.breakTime], [l.startKm.replace(' *',''), payload.startKm], [l.endKm.replace(' *',''), payload.endKm], [l.totalKm, payload.totalKm], [l.totalHours, payload.totalHours], [l.remarks, payload.remarks || "-"]]; reportRows.forEach((row, index) => { if (index % 2 === 0) doc.setFillColor(245, 247, 250); else doc.setFillColor(255, 255, 255); doc.rect(startX, currentY, tableWidth, rowHeight, "F"); doc.setDrawColor(220, 224, 230); doc.rect(startX, currentY, tableWidth, rowHeight, "D"); doc.setTextColor(60, 60, 60); doc.text(row[0], startX + 4, currentY + 6); doc.text(String(row[1]), startX + col1Width + 4, currentY + 6); currentY += rowHeight; }); const fileName = "DN_Flex_Log_" + payload.datum + ".pdf"; const pdfBlob = doc.output('blob'); const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' }); if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) navigator.share({ files: [pdfFile], title: fileName }); else doc.save(fileName); }
+        function generateExcel(payload) { const l = dictionary[currentLang]; if (!payload || !payload.driver) { alert(l.alert_fill); return; } const dataRows = [[l.pdf_field, l.pdf_value], [l.week, payload.weekNumber], [l.date.replace(' *',''), payload.datum], [l.driver.replace(' *',''), payload.driver], [l.client.replace(' *',''), payload.client], [l.truck, payload.truckLicense || "-"], [l.trailer, payload.trailerLicense || "-"], [l.startTime.replace(' *',''), payload.beginTime.replace('T', ' ')], [l.endTime.replace(' *',''), payload.eindTime.replace('T', ' ')], [l.breakTime, payload.breakTime], [l.totalHours, payload.totalHours], [l.startKm.replace(' *',''), payload.startKm], [l.endKm.replace(' *',''), payload.endKm], [l.totalKm, payload.totalKm], [l.remarks, payload.remarks || "-"]]; const worksheet = XLSX.utils.aoa_to_sheet(dataRows); const workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "DN Flex Log"); const fileName = "DN_Flex_Log_" + payload.datum + ".xlsx"; const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' }); const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); const excelFile = new File([excelBlob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); if (navigator.canShare && navigator.canShare({ files: [excelFile] })) navigator.share({ files: [excelFile], title: fileName }); else XLSX.writeFile(workbook, fileName); }
+        function sendWhatsApp(payload) { const l = dictionary[currentLang]; if (!payload || !payload.driver) { alert(l.alert_fill); return; } let msg = "DN FLEX DRIVER REPORT\n------------------------\n" + l.date.replace(' *','') + ": " + payload.datum + "\n" + l.driver.replace(' *','') + ": " + payload.driver + "\n" + l.client.replace(' *','') + ": " + payload.client + "\n" + l.truck + ": " + (payload.truckLicense || "-") + "\n" + l.trailer + ": " + (payload.trailerLicense || "-") + "\n" + l.startTime.replace(' *','') + ": " + payload.beginTime.replace('T', ' ') + "\n" + l.endTime.replace(' *','') + ": " + payload.eindTime.replace('T', ' ') + "\n" + l.breakTime + ": " + payload.breakTime + "\n" + l.totalHours + ": " + payload.totalHours + "\n" + l.startKm.replace(' *','') + ": " + payload.startKm + "\n" + l.endKm.replace(' *','') + ": " + payload.endKm + "\n" + l.totalKm + ": " + payload.totalKm + "\n" + l.remarks + ": " + (payload.remarks || "-"); window.location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg); }
         document.getElementById('whatsappBtn').addEventListener('click', () => { sendWhatsApp(lastSubmittedPayload || generateCurrentPayload()); });
         document.getElementById('pdfBtn').addEventListener('click', () => { generatePDF(lastSubmittedPayload || generateCurrentPayload()); });
         document.getElementById('excelBtn').addEventListener('click', () => { generateExcel(lastSubmittedPayload || generateCurrentPayload()); });
-
-        document.getElementById('truckingForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const payload = generateCurrentPayload();
-            lastSubmittedPayload = payload; 
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerText = dictionary[currentLang].submitting;
-            submitBtn.style.backgroundColor = "#6c757d";
-            fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
-            .then(response => response.json())
-            .then(data => { if(data.status === 'success') alert(dictionary[currentLang].success); submitBtn.innerText = dictionary[currentLang].submit; submitBtn.style.backgroundColor = "#28a745"; })
-            .catch(error => { alert(dictionary[currentLang].error); submitBtn.innerText = dictionary[currentLang].submit; submitBtn.style.backgroundColor = "#28a745"; });
-        });
+        document.getElementById('truckingForm').addEventListener('submit', function(e) { e.preventDefault(); const payload = generateCurrentPayload(); lastSubmittedPayload = payload; const submitBtn = document.getElementById('submitBtn'); submitBtn.innerText = dictionary[currentLang].submitting; submitBtn.style.backgroundColor = "#6c757d"; fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }).then(response => response.json()).then(data => { if(data.status === 'success') alert(dictionary[currentLang].success); submitBtn.innerText = dictionary[currentLang].submit; submitBtn.style.backgroundColor = "#28a745"; }).catch(error => { alert(dictionary[currentLang].error); submitBtn.innerText = dictionary[currentLang].submit; submitBtn.style.backgroundColor = "#28a745"; }); });
     </script>
 </body>
 </html>
