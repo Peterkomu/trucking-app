@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Work Entry</title>
+    <title>DN Flex - Driver Work Entry</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -12,16 +12,24 @@
             padding: 20px; 
             max-width: 500px; 
             margin: auto; 
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); 
+            /* Added dark gradient overlay and high-res truck background image */
+            background: linear-gradient(rgba(15, 32, 39, 0.75), rgba(32, 58, 67, 0.75)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed; 
+            background-size: cover;
             min-height: 100vh; 
         }
         .form-container { 
             background: white; 
             padding: 30px; 
             border-radius: 12px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
             border-top: 6px solid #337ab7; 
         }
+        
+        /* Brand Header Styling */
+        .header-brand { text-align: center; margin-bottom: 25px; }
+        .header-brand h1 { color: #2c3e50; margin: 0 0 5px 0; font-size: 32px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800; }
+        .header-brand h3 { color: #7f8c8d; margin: 0; font-size: 16px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;}
+
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; font-size: 14px;}
         input, select { 
@@ -59,7 +67,6 @@
         .btn-excel { background-color: #4caf50; color: white; box-shadow: 0 4px 6px rgba(76,175,80,0.2); }
         .btn-excel:hover { background-color: #388e3c; box-shadow: 0 6px 10px rgba(76,175,80,0.3); }
         
-        h2 { text-align: center; color: #2c3e50; margin-top: 0; font-weight: 700; letter-spacing: 0.5px;}
         .flex-row { display: flex; gap: 10px; }
         .flex-item { flex: 1; }
         .small-label { display: block; font-size: 12px; color: #777; margin-top: 6px; text-align: center; font-weight: 500;}
@@ -81,7 +88,11 @@
             <div class="btn-lang" onclick="setLanguage('de')">German</div>
         </div>
 
-        <h2 id="ui-title">Driver Work Entry</h2>
+        <div class="header-brand">
+            <h1>DN Flex</h1>
+            <h3 id="ui-title">Driver Work Entry</h3>
+        </div>
+        
         <form id="truckingForm">
             
             <div class="form-group">
@@ -406,7 +417,7 @@
             doc.setFontSize(18);
             doc.setFont("helvetica", "bold");
             doc.setTextColor(44, 62, 80);
-            doc.text(l.pdf_title, 15, 20);
+            doc.text("DN Flex - " + l.pdf_title, 15, 20);
             
             const startX = 15;
             let currentY = 28;
@@ -458,7 +469,7 @@
                 currentY += rowHeight;
             });
             
-            const fileName = "Shift_Log_" + payload.datum + ".pdf";
+            const fileName = "DN_Flex_Log_" + payload.datum + ".pdf";
             const pdfBlob = doc.output('blob');
             const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
@@ -499,9 +510,9 @@
 
             const worksheet = XLSX.utils.aoa_to_sheet(dataRows);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Shift Log");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "DN Flex Log");
             
-            const fileName = "Shift_Log_" + payload.datum + ".xlsx";
+            const fileName = "DN_Flex_Log_" + payload.datum + ".xlsx";
             const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
             const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             const excelFile = new File([excelBlob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -522,7 +533,7 @@
                 alert(l.alert_fill);
                 return;
             }
-            let msg = "DRIVER SHIFT REPORT\n";
+            let msg = "DN FLEX DRIVER REPORT\n";
             msg += "------------------------\n";
             msg += l.date.replace(' *','') + ": " + payload.datum + "\n";
             msg += l.driver.replace(' *','') + ": " + payload.driver + "\n";
